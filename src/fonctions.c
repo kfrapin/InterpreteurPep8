@@ -8,12 +8,13 @@
 //--------------------------------------------------- INCLUDE SYSTEMES
 
 //--------------------------------------------------- INCLUDE PERSONNELS
-#include "../includes/constantes.h"
-#include "../includes/erreurs.h"
-#include "../includes/fonctions.h"
-#include "../includes/globales.h"
+#include "includes/affichage.h"
+#include "includes/constantes.h"
+#include "includes/erreurs.h"
+#include "includes/fonctions.h"
+#include "includes/globales.h"
 #ifdef DEBUG
-    #include "../includes/debug.h"
+    #include "includes/debug.h"
 #endif
 
 //--------------------------------------------------- FONCTIONS

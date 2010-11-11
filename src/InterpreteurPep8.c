@@ -13,11 +13,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../includes/constantes.h"
-#include "../includes/erreurs.h"
-#include "../includes/fonctions.h"
-#include "../includes/globales.h"
-#include "../includes/tests.h"
+#include "includes/affichage.h"
+#include "includes/constantes.h"
+#include "includes/erreurs.h"
+#include "includes/fonctions.h"
+#include "includes/globales.h"
+#include "includes/tests.h"
 
 
 #ifndef TEST

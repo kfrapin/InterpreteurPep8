@@ -8,8 +8,7 @@
  * ----------------------------------------------------------------------------
  *
  *  La structure du fichier est la suivante :
- * 
- *  0./ Constantes utilisées par le programme (malloc, affichage,..)
+ *
  *  1./ Constantes (arbitraires) pour définir les opcodes
  *  2./ Constantes permettant de savoir avec les 4 premiers bits :
  *          - Le groupe d'instructions auquel appartient l'opcode (cf. 3./)
@@ -26,29 +25,6 @@
 // Define utilisé pour effectuer des tests, debugs
 // #define TEST
 #define DEBUG
-
-//----------------------------------------------------------------------------
-//  0./ Constantes pour le programme (malloc, affichage,...)
-//----------------------------------------------------------------------------
-
-//--------------------------------------------------------- AFFICHAGE
-// Definition de la tabulation
-#define TAB "\t"
-
-// Definition du retour chariot
-#define RET "\n"
-
-// Definition du separateur permettant d'indiquer que l'on est avant
-// une mise a jour d'une variable
-#define SEP_AVT_MAJ "------------------------ AVANT MAJ DE : "
-
-// Definition du separateur permettant d'indiquer que l'on est apres
-// une mise a jour d'une variable
-#define SEP_APR_MAJ "------------------------ APRES MAJ DE : "
-
-// Definition du separateur permettant d'indiquer les variables concernées
-// par un affichage de leur valeur
-#define SEP_FIN "------------------------"
 
 //--------------------------------------------------------- OUTILS PROGRAMME
 // Taille allouée pour stocker l'ensemble du programme Pep8

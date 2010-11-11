@@ -15,8 +15,8 @@
 //--------------------------------------------------- INCLUDE SYSTEMES
 
 //--------------------------------------------------- INCLUDE PERSONELS
-#include "../includes/globales.h"
-#include "../includes/constantes.h"
+#include "includes/globales.h"
+#include "includes/constantes.h"
 
 
 //--------------------------------------------------- GLOBALES

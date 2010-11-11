@@ -12,8 +12,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "../includes/fonctions.h"
-#include "../includes/tests.h"
+#include "includes/fonctions.h"
+#include "includes/tests.h"
 
 
 

@@ -15,9 +15,10 @@
 #include <stdio.h>
 
 //--------------------------------------------------- INCLUDE PERSONNELS
-#include "../includes/constantes.h"
-#include "../includes/debug.h"
-#include "../includes/globales.h"
+#include "includes/affichage.h"
+#include "includes/constantes.h"
+#include "includes/debug.h"
+#include "includes/globales.h"
 
 //--------------------------------------------------- FONCTIONS
 // Fonctions permettant d'afficher la valeur 
