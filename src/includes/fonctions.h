@@ -66,6 +66,14 @@ schar ExecuterLDr( uchar opcodeDroite );
 // en fonction des 4 bits de droite
 schar ExecuterORr( uchar opcodeDroite );
 
+// Fonction permettant d'executer l'instruction ROLr
+// en fonction des 4 bits de droite
+schar ExecuterROLr( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction RORr
+// en fonction des 4 bits de droite
+schar ExecuterRORr( uchar opcodeDroite );
+
 // Fonction permettant d'executer l'instruction du groupe 
 // GRINST1 au vu de la valeur des 4 derniers bits fournis.
 schar ExecuterInstGr1(uchar opcodeDroite);
@@ -73,6 +81,10 @@ schar ExecuterInstGr1(uchar opcodeDroite);
 // Fonction permettant d'executer l'instruction du groupe
 // GRINST2 au vu de la valeur des 4 derniers bits fournis.
 schar ExecuterInstGr2( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction du groupe
+// GRINST3 au vu de la valeur des 4 derniers bits fournis.
+schar ExecuterInstGr3( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction du groupe 
 // GRINST5 au vu de la valeur des 4 derniers bits fournis.

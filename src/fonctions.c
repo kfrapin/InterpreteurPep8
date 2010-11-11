@@ -472,6 +472,90 @@ schar ExecuterORr( uchar opcodeDroite )
 #endif
 }
 
+// Fonction permettant d'executer l'instruction ROLr
+// en fonction des 4 bits de droite
+schar ExecuterROLr( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterROLr." RET);
+    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    printf( TAB SEP_FIN RET );
+#endif
+
+    // Registre concerné par l'opération
+    uint * registreConcerne;
+
+    if( (opcodeDroite & 1) == 0 )
+    {
+        registreConcerne = &registreA;
+    }
+    else
+    {
+        registreConcerne = &registreX;
+    }
+
+    // On met de cote la future valeur du code de condition
+    uchar nouvelleValeurC = ( ( * registreConcerne ) >> 15 ) & 1;
+
+    // On met a jour le registre
+    ( * registreConcerne ) = ( ( * registreConcerne ) << 1 ) | codeC;
+
+    // On met a jour le code de condiction C
+    MettreAJourC( nouvelleValeurC );
+
+#ifdef DEBUG
+    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    printf( TAB SEP_FIN RET );
+    printf( "- ExecuterROLr." RET);
+#endif
+}
+
+// Fonction permettant d'executer l'instruction RORr
+// en fonction des 4 bits de droite
+schar ExecuterRORr( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterRORr." RET);
+    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    printf( TAB SEP_FIN RET );
+#endif
+
+    // Registre concerné par l'opération
+    uint * registreConcerne;
+
+    if( (opcodeDroite & 1) == 0 )
+    {
+        registreConcerne = &registreA;
+    }
+    else
+    {
+        registreConcerne = &registreX;
+    }
+
+    // On met de cote la future valeur du code de condition
+    uchar nouvelleValeurC = ( * registreConcerne ) & 1;
+
+    // On met a jour le registre
+    ( * registreConcerne ) = ( ( * registreConcerne ) >> 1 ) | ( codeC << 15 );
+
+    // On met a jour le code de condiction C
+    MettreAJourC( nouvelleValeurC );
+
+#ifdef DEBUG
+    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    printf( TAB SEP_FIN RET );
+    printf( "- ExecuterRORr." RET);
+#endif
+}
+
 // Fonction permettant d'executer l'instruction du groupe
 //  GRINST1 au vu de la valeur des 4 derniers bits fournis
 schar ExecuterInstGr1(uchar opcodeDroite)
@@ -764,6 +848,31 @@ schar ExecuterInstGr2( uchar opcodeDroite )
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr2." RET);
+#endif
+}
+
+// Fonction permettant d'executer l'instruction du groupe
+// GRINST3 au vu de la valeur des 4 derniers bits fournis.
+schar ExecuterInstGr3( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterInstGr3." RET);
+#endif
+
+    if( opcodeDroite <= ROLR_FIN_S )
+    {
+    	ExecuterROLr( opcodeDroite );
+    }
+    else if( opcodeDroite <= RORR_FIN_S )
+    {
+    	ExecuterRORr( opcodeDroite );
+    }
+
+    // Sinon on est sur une opération NOP
+    // On ne fait rien
+
+#ifdef DEBUG
+    printf( "- ExecuterInstGr3." RET);
 #endif
 }
 

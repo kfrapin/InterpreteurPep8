@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
             		break;
 
             	case GRINST3:
-            		// TODO : implémenter
+            		retourExec = ExecuterInstGr3( opcodeDroite );
             		break;
 
             	case GRINST4:
