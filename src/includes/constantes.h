@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Projet sous Licence Apache Version 2.0.	                                            //
+//----------------------------------------------------------------------------------------------------------//
+//                                                                                                          //
+//	Pour plus d'informations concernant cette licence et son utilisation,  //
+//	veuillez consulter :                                                                            //
+//		- Le document LICENSE                                                                //
+//		- http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                                                          //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * File:   definitions.h
  * Author: mousseyed, kevin

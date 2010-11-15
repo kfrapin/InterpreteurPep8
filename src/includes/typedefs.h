@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Projet sous Licence Apache Version 2.0.	                                            //
+//----------------------------------------------------------------------------------------------------------//
+//                                                                                                          //
+//	Pour plus d'informations concernant cette licence et son utilisation,  //
+//	veuillez consulter :                                                                            //
+//		- Le document LICENSE                                                                //
+//		- http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                                                          //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * File:   globales.h
  * Author: kevin, mousseyed
@@ -20,6 +31,9 @@
 //----------------------------------------- ENTIERS
 // Type uint : Entier sur 32 bits non signé
 typedef unsigned int uint;
+
+// Type uint : Entier sur 32 bits signé
+typedef signed int sint;
 
 // Type ssint : Entier sur 16 bits non signé
 typedef signed short int ssint;

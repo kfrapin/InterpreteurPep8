@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Projet sous Licence Apache Version 2.0.	                                            //
+//----------------------------------------------------------------------------------------------------------//
+//                                                                                                          //
+//	Pour plus d'informations concernant cette licence et son utilisation,  //
+//	veuillez consulter :                                                                            //
+//		- Le document LICENSE                                                                //
+//		- http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                                                          //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /* 
  * File:   fonctions.h
  * Author: kevin, mousseyed
@@ -49,6 +60,10 @@ schar ExecuterADDr( uchar opcodeDroite );
 // Fonction permettant d'executer l'instruction ANDr
 // en fonction des 4 bits de droite
 schar ExecuterANDr( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction CHARI
+// en fonction des 4 bits de droite
+schar ExecuterCHARI( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction CPr
 // en fonction des 4 bits de droite

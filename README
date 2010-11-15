@@ -1,10 +1,24 @@
-Createur : FRAPIN Kevin
-Date	 : 11/11/2010
+-----------------------------------
+|  Créateur : FRAPIN Kevin        |
+|  Date de création : 11/11/2010  |
+-----------------------------------
+
+/!\ Attention /!\
+------------------
+Ce projet est en cours de réalisation, et n'est pas encore opérationnel.
+Une fois le prgramme considéré comme stable, une version sera proposée.
 
 Description : 
 -------------
 Interpréteur pour le jeu d'instructions Pep8 développé dans le cadre d'un cours de Machines Virtuelles à l'UQÀM.
 
-Pour plus d'informations :
---------------------------
+Licence :
+---------
+L'ensemble de ce projet se trouve être sous Licence Apache Version 2.0.
+Pour plus d'informations sur la licence, voir le fichier : 
+  - Le document LICENSE
+  - http://www.apache.org/licenses/LICENSE-2.0
+
+Pour plus d'informations sur le projet :
+----------------------------------------
 kevin.frapin@gmail.com

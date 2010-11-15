@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	Projet sous Licence Apache Version 2.0.	                                            //
+//----------------------------------------------------------------------------------------------------------//
+//                                                                                                          //
+//	Pour plus d'informations concernant cette licence et son utilisation,  //
+//	veuillez consulter :                                                                            //
+//		- Le document LICENSE                                                                //
+//		- http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                                                          //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /* 
  * File:   fonctions.c
  * Author: mousseyed, kevin
@@ -284,6 +295,36 @@ schar ExecuterANDr( uchar opcodeDroite )
     AfficherValeurRegistreX( );
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterANDr." RET);
+#endif
+}
+
+// Fonction permettant d'executer l'instruction CHARI
+// en fonction des 4 bits de droite
+schar ExecuterCHARI( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterCHARI." RET);
+#endif
+
+	// On met a jour l'operande qui va servir a savoir ou il faut stocker le caractere
+	MettreAJourOperandeIR( );
+
+	// On recupere un caractere au clavier et on le stocke en memoire
+	sint caractereSaisi = getchar( );
+
+	if( caractereSaisi == EOF )
+	// Erreur a la lecture
+	{
+		return;
+	}
+
+	// On sait que le caractere lu est non signe
+	uchar modeAdressage = opcodeDroite & 7;
+
+	RecopierOctetRegistreEnMemoire( (uint) &caractereSaisi, modeAdressage );
+
+#ifdef DEBUG
+    printf( "- ExecuterCHARI." RET);
 #endif
 }
 
@@ -880,7 +921,22 @@ schar ExecuterInstGr3( uchar opcodeDroite )
 // GRINST5 au vu de la valeur des 4 derniers bits fournis.
 schar ExecuterInstGr5( uchar opcodeDroite)
 {
-    // TODO : à implémenter
+#ifdef DEBUG
+    printf( "+ ExecuterInstGr5." RET);
+#endif
+
+	if( opcodeDroite <= STRO_FIN_S )
+	{
+		// TODO : a implementer
+		return;
+	}
+
+	// On est sur l'operation CHARI
+	ExecuterCHARI( opcodeDroite );
+
+#ifdef DEBUG
+    printf( "- ExecuterInstGr5." RET);
+#endif
 }
 
 // Fonction permettant d'executer l'instruction du groupe
