@@ -50,7 +50,8 @@ uint registrePC = 0;
 
 // Pour empiler sur la pile, il faut décrémenter
 // le registreSP; et inversement pour dépiler.
-uint registreSP = INIT_REGISTRE_SP;
+// Initialisation faite dans le programme principal.
+uint registreSP;
 
 uchar instructionIR = 0;
 uint operandeIR = 0;
