@@ -80,10 +80,13 @@ int main(int argc, char** argv) {
         RecopierFichierEnMemoire( fichierEntree, memoire, 0 );
 
         // On interprète les insctruction
+        registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
+        registrePC = 0;
         instructionIR = memoire[registrePC++];
 
         // Variable permettant de savoir si l'exécution s'est bien passée
         schar retourExec = 0;
+
 
         // L'overhead est considérable
         while( (instructionIR != STOP) && (retourExec != EXECUTION_KO) )
@@ -113,7 +116,7 @@ int main(int argc, char** argv) {
             		break;
 
             	case GRINST4:
-            		// TODO : implémenter
+            		retourExec = ExecuterInstGr4( opcodeDroite );
             		break;
 
             	case GRINST5:

@@ -37,9 +37,17 @@
 // Fonction permettant d'ajouter une valeur à un registre
 void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter );
 
+// Fonction permettant de sauvegarder et mettre a jour les registres afin
+// d'effectuer un appel a une trap du systeme d'exploitation
+void AppelerTrapHandler(  );
+
 // Fonction permettant de charger l'image du système d'exploitation
 // en fin de memoire (ie, derniere instruction a l'adresse TAILLE_MEMOIRE_MAX)
 void ChargerSystemeExploitation( FILE * fichierOS );
+
+// Fonction permettant de mettre les codes de condition NZVC
+// sous la forme d'un int
+uint ConcatenerNZVC( );
 
 // Fonction permettant de decaler un registre vers la droite
 void inline DecalerDroiteRegistre( uint * registre );
@@ -89,6 +97,9 @@ schar ExecuterLDr( uchar opcodeDroite );
 // en fonction des 4 bits de droite
 schar ExecuterORr( uchar opcodeDroite );
 
+// Fonction permettant d'executer l'instruction RETTR
+schar ExecuterRETTR(  );
+
 // Fonction permettant d'executer l'instruction ROLr
 // en fonction des 4 bits de droite
 schar ExecuterROLr( uchar opcodeDroite );
@@ -96,6 +107,10 @@ schar ExecuterROLr( uchar opcodeDroite );
 // Fonction permettant d'executer l'instruction RORr
 // en fonction des 4 bits de droite
 schar ExecuterRORr( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction STBYTEr
+// en fonction des 4 bits de droite
+schar ExecuterSTBYTEr( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction du groupe 
 // GRINST1 au vu de la valeur des 4 derniers bits fournis.
@@ -108,6 +123,10 @@ schar ExecuterInstGr2( uchar opcodeDroite );
 // Fonction permettant d'executer l'instruction du groupe
 // GRINST3 au vu de la valeur des 4 derniers bits fournis.
 schar ExecuterInstGr3( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction du groupe
+// GRINST4 au vu de la valeur des 4 derniers bits fournis.
+schar ExecuterInstGr4( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction du groupe 
 // GRINST5 au vu de la valeur des 4 derniers bits fournis.

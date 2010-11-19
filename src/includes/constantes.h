@@ -35,14 +35,30 @@
 
 // Define utilisé pour effectuer des tests, debugs
 // #define TEST
-// #define DEBUG
+#define DEBUG
+
+
+//--------------------------------------------------------- VECTEURS INTERRUPTIONS
+// Emplacement memoire contenant l'adresse
+// du pointeur de pile utilisateur
+#define ADR_MEM_SP_USER (0xFFF8)
+
+// Emplacement memoire contenant l'adresse
+// du pointeur de pile systeme
+#define ADR_MEM_SP_SYS (0xFFFA)
+
+// Emplacement memoire contenant l'adresse
+// du LOADER
+#define ADR_MEM_LOADER (0xFFFC)
+
+// Emplacement memoire contenant l'adresse
+// du TRAP HANDLER
+#define ADR_MEM_TRAP_HANDLER (0xFFFE)
+
 
 //--------------------------------------------------------- OUTILS PROGRAMME
 // Taille allouée pour stocker l'ensemble du programme Pep8
 #define TAILLE_MEMOIRE_MAX (0xFFFF )
-
-// Emplacement du pointeur de pile au démarrage
-#define INIT_REGISTRE_SP (0xFBCF)
 
 // Masque sur 16 bits (pour les debordements,...)
 #define MASQUE_16_BITS (0xFFFF)

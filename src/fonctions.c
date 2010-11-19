@@ -116,6 +116,46 @@ void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter )
 #endif
 }
 
+// Fonction permettant de sauvegarder et mettre a jour les registres afin
+// d'effectuer un appel a une trap du systeme d'exploitation
+void AppelerTrapHandler(  )
+{
+#ifdef DEBUG
+    printf( "+ AppelerTrapHandler." RET);
+    printf( TAB SEP_AVT_MAJ "registreA,  registreX, registrePC, registreSP" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    AfficherValeurRegistrePC( );
+    AfficherValeurRegistreSP( );
+    printf( TAB SEP_FIN RET );
+#endif
+
+    // Sauvegarde des registres dans la pile systeme
+    uint temp = LireMotEnMemoire( ADR_MEM_SP_SYS );
+    EcrireOctetEnMemoire( instructionIR, ( temp - 1 ) );
+    EcrireMotEnMemoire( registreSP, ( temp - 3 ) );
+    EcrireMotEnMemoire( registrePC, ( temp - 5 ) );
+    EcrireMotEnMemoire( registreX,  ( temp - 7 ) );
+    EcrireMotEnMemoire( registreA, ( temp - 9 ) );
+    EcrireOctetEnMemoire( ConcatenerNZVC( ), ( temp - 10 ) );
+
+    // Mise a jour du pointeur de pile
+    registreSP = ( temp - 10 );
+
+    // Mise a jour du compteur de programme pour appeler le trap handler
+    registrePC = LireMotEnMemoire( ADR_MEM_TRAP_HANDLER );
+
+#ifdef DEBUG
+    printf( TAB SEP_AVT_MAJ "registreA,  registreX, registrePC, registreSP" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    AfficherValeurRegistrePC( );
+    AfficherValeurRegistreSP( );
+    printf( TAB SEP_FIN RET );
+    printf( "- AppelerTrapHandler." RET);
+#endif
+}
+
 // ATTENTION
 //---------------------------------------------------------------------------------------------------------------------
 // Cette fonction est prevue pour charger l'image du systeme d'exploitation
@@ -137,6 +177,30 @@ void ChargerSystemeExploitation( FILE * fichierOS )
 #ifdef DEBUG
     printf( "- ChargerSystemeExploitation." RET);
 #endif
+}
+
+// Fonction permettant de mettre les codes de condition NZVC
+// sous la forme d'un char
+uint ConcatenerNZVC( )
+{
+#ifdef DEBUG
+    printf( "+ ConcatenerNZVC." RET);
+#endif
+
+    // Concatenation des codes de condition
+	// 	- Bit 3 : code N
+	//	- Bit 2 : code Z
+	//	- Bit 1 : code V
+	//	- Bit 0 : code C
+    uchar decalageN = codeN << 3;
+    uchar decalageZ = codeZ << 2;
+    uchar decalageV = codeV << 1;
+
+#ifdef DEBUG
+    printf( "- ConcatenerNZVC." RET);
+#endif
+
+    return ( ( uint ) ( decalageN | decalageZ | decalageV | codeC )  );
 }
 
 // Fonction permettant de decaler un registre vers la droite
@@ -192,8 +256,8 @@ void inline EcrireMotEnMemoire( uint valeur, uint adresse )
 #ifdef DEBUG
     printf( "+ EcrireMotEnMemoire." RET);
     printf( TAB SEP_AVT_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%u] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
-    printf( TAB "Valeur memoire[%u] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[(adresse+1) & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[(adresse+1) & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
 #endif
 
@@ -205,8 +269,8 @@ void inline EcrireMotEnMemoire( uint valeur, uint adresse )
 
 #ifdef DEBUG
     printf( TAB SEP_APR_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%u] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
-    printf( TAB "Valeur memoire[%u] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[ (adresse+1) & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[ (adresse+1) & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
     printf( "- EcrireMotEnMemoire." RET);
 #endif
@@ -218,7 +282,7 @@ void inline EcrireOctetEnMemoire( uint valeur, uint adresse )
 #ifdef DEBUG
     printf( "+ EcrireOctetEnMemoire." RET);
     printf( TAB SEP_AVT_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%u] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
 #endif
 
@@ -227,7 +291,7 @@ void inline EcrireOctetEnMemoire( uint valeur, uint adresse )
 
 #ifdef DEBUG
     printf( TAB SEP_APR_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%u] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
     printf( "- EcrireOctetEnMemoire." RET);
 #endif
@@ -557,6 +621,44 @@ schar ExecuterORr( uchar opcodeDroite )
 #endif
 }
 
+// Fonction permettant d'executer l'instruction RETTR
+schar ExecuterRETTR(  )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterRETTR." RET);
+    printf( TAB SEP_AVT_MAJ "registreA,  registreX, registrePC, registreSP" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    AfficherValeurRegistrePC( );
+    AfficherValeurRegistreSP( );
+    printf( TAB SEP_FIN RET );
+#endif
+
+    // Remise en place du contexte present avant l'appel au trap handler
+    // Codes de condition
+    uchar codesNZVC = LireOctetEnMemoire( registreSP );
+    codeN = ( codesNZVC & 8 );
+    codeZ = ( codesNZVC & 4 );
+    codeV = ( codesNZVC & 2 );
+    codeC = ( codesNZVC & 1 );
+
+    // Registres
+    registreA = LireMotEnMemoire( registreSP + 1 );
+    registreX = LireMotEnMemoire( registreSP + 3 );
+    registrePC = LireMotEnMemoire( registreSP + 5 );
+    registreSP = LireMotEnMemoire( registreSP + 7 );
+
+#ifdef DEBUG
+    printf( TAB SEP_APR_MAJ "registreA,  registreX, registrePC, registreSP" RET );
+    AfficherValeurRegistreA( );
+    AfficherValeurRegistreX( );
+    AfficherValeurRegistrePC( );
+    AfficherValeurRegistreSP( );
+    printf( TAB SEP_FIN RET );
+    printf( "- ExecuterRETTR." RET);
+#endif
+}
+
 // Fonction permettant d'executer l'instruction ROLr
 // en fonction des 4 bits de droite
 schar ExecuterROLr( uchar opcodeDroite )
@@ -662,7 +764,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
 
     else if( opcodeDroite == RETTR_FIN )
     {
-        // Traitement à metrre en place (cf. chapitre 12 du cours du prof)
+        ExecuterRETTR( );
         return;
     }
 
@@ -675,11 +777,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
     else if( opcodeDroite == MOVFLGA_FIN )
     {
         // Copie de NZVC dans le registre A (dans les 4 bits de droite)
-        registreA = 0;
-        uchar decalageN = codeN << 3;
-        uchar decalageZ = codeZ << 2;
-        uchar decalageV = codeV << 1;
-        registreA = decalageN | decalageZ | decalageV | codeC;
+        registreA = ConcatenerNZVC( );
         return;
     }
 
@@ -893,6 +991,28 @@ schar ExecuterInstGr3( uchar opcodeDroite )
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr3." RET);
+#endif
+}
+
+// Fonction permettant d'executer l'instruction du groupe
+// GRINST4 au vu de la valeur des 4 derniers bits fournis.
+schar ExecuterInstGr4( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterInstGr4." RET);
+#endif
+
+    if( opcodeDroite <= DECI_FIN_S )
+    {
+    	AppelerTrapHandler(  );
+    	return;
+    }
+
+    // Sinon operation DECO
+
+
+#ifdef DEBUG
+    printf( "- ExecuterInstGr4." RET);
 #endif
 }
 
