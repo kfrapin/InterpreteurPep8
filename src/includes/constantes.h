@@ -35,23 +35,23 @@
 
 // Define utilisé pour effectuer des tests, debugs
 // #define TEST
-#define DEBUG
+// #define DEBUG
 
 //--------------------------------------------------------- OUTILS PROGRAMME
 // Taille allouée pour stocker l'ensemble du programme Pep8
-#define TAILLE_MEMOIRE_MAX (65535)
+#define TAILLE_MEMOIRE_MAX (0xFFFF )
 
 // Emplacement du pointeur de pile au démarrage
-#define INIT_REGISTRE_SP (64463)
+#define INIT_REGISTRE_SP (0xFBCF)
 
 // Masque sur 16 bits (pour les debordements,...)
-#define MASQUE_16_BITS (0xffff)
+#define MASQUE_16_BITS (0xFFFF)
 
 // Masque pour les 8 bits de droite
-#define MASQUE_8_BITS_D (0x00ff)
+#define MASQUE_8_BITS_D (0x00FF)
 
 // Masque pour les 8 bits de gauche
-#define MASQUE_8_BITS_G (0xff00)
+#define MASQUE_8_BITS_G (0xFF00)
 
 
 //----------------------------------------------------------------------------

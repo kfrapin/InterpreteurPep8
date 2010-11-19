@@ -37,15 +37,36 @@
 
 int main(int argc, char** argv) {
 
-        // Fichier fourni en paramètre ?
-	if( argc < 2)
+    // Fichier fourni en paramètre ?
+	if( argc < 3 )
 	{
-		puts( "La syntaxe attendue est : ./interpreteur <fichier>" RET );
+		puts( "La syntaxe attendue est : ./interpreteur <imageOS> <fichier>" RET );
 		return EXIT_FAILURE;
 	}
 
+	// On créé un tableau qui représente la mémoire utilisée pour stocker
+    // le programme Pep8 et le systeme d'exploitation
+	memoire = malloc(TAILLE_MEMOIRE_MAX);
+        if( memoire == NULL )
+        {
+#ifdef DEBUG
+    printf( "Impossible d'allouer la mémoire de Pep8." RET );
+#endif
+            return EXIT_FAILURE;
+        }
+
+	// On charge le systeme d'exploitation Pep8
+	uchar * imageOS = ( uchar * ) argv[1];
+	FILE * fichierOS = ( FILE * ) fopen( imageOS, "rb" );
+	if( fichierOS == NULL )
+	{
+		printf( "Impossible d'ouvrir le fichier : %s" RET, imageOS );
+		return EXIT_FAILURE;
+	}
+	ChargerSystemeExploitation( fichierOS );
+
 	// On récupère le nom de fichier fourni en paramètre
-	uchar * nomFichierEntree = ( uchar *  ) argv[1];
+	uchar * nomFichierEntree = ( uchar *  ) argv[2];
 
 	// On tente d'ouvrir ce fichier en lecture de manière
 	FILE * fichierEntree = ( FILE * ) fopen( nomFichierEntree, "rb" );
@@ -55,20 +76,8 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	// On créé un tableau qui représente la mémoire utilisée pour stocker
-        // le programme Pep8
-	memoire = malloc(TAILLE_MEMOIRE_MAX);
-        if( memoire == NULL )
-        {
-#ifdef DEBUG
-    printf( "Impossible d'allouer la mémoire de Pep8." RET );
-#endif
-            fclose( fichierEntree );
-            return EXIT_FAILURE;
-        }
-
-        // On recopie le fichier en mémoire
-        RecopierFichierEnMemoire( fichierEntree, memoire );
+        // On recopie le fichier en mémoire a partir de l'adresse 0
+        RecopierFichierEnMemoire( fichierEntree, memoire, 0 );
 
         // On interprète les insctruction
         instructionIR = memoire[registrePC++];
@@ -158,6 +167,10 @@ int main(int argc, char** argv) {
 
             instructionIR = memoire[registrePC++];
         }
+
+    // Retour a la ligne avant la fin du programme
+    printf( RET );
+
     return (EXIT_SUCCESS);
 }
 

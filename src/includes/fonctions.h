@@ -37,6 +37,10 @@
 // Fonction permettant d'ajouter une valeur à un registre
 void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter );
 
+// Fonction permettant de charger l'image du système d'exploitation
+// en fin de memoire (ie, derniere instruction a l'adresse TAILLE_MEMOIRE_MAX)
+void ChargerSystemeExploitation( FILE * fichierOS );
+
 // Fonction permettant de decaler un registre vers la droite
 void inline DecalerDroiteRegistre( uint * registre );
 
@@ -64,6 +68,10 @@ schar ExecuterANDr( uchar opcodeDroite );
 // Fonction permettant d'executer l'instruction CHARI
 // en fonction des 4 bits de droite
 schar ExecuterCHARI( uchar opcodeDroite );
+
+// Fonction permettant d'executer l'instruction CHARO
+// en fonction des 4 bits de droite
+schar ExecuterCHARO( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction CPr
 // en fonction des 4 bits de droite
@@ -129,7 +137,7 @@ schar ExecuterSUBr( uchar opcodeDroite );
 uint LireMotEnMemoire( uint adresse );
 
 // Fonction permettant de lire un octet (8 bits) en mémoire
-uint LireOctetEnMemoire( uint adresse );
+uchar LireOctetEnMemoire( uint adresse );
 
 // Fonction permetter d'effectuer un NOT sur un registre
 void inline NierRegistre( uint * regitre );
@@ -154,7 +162,8 @@ void inline MettreAJourV( uchar debordement );
 void MettreAJourOperandeIR( );
 
 // Fonction permettant de recopier un fichier dans une zone mémoire
-void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire );
+// a partir de l'index indexDebut
+void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire, uint indexDebut );
 
 // Fonction permettant mettre à jour le registre PC avec l'opérande
 // fournit à l'instruction
@@ -174,7 +183,7 @@ void RecopierOctetRegistreEnMemoire( uint * registre, uchar modeAdressage );
 // le mode d'adressage pour y accéder.
 // ATTENTION : la variable operandeIR, doit auparavant
 // avoir été mise à jour.
-uint RecupererOctetEnMemoire( uchar modeAdressage );
+uchar RecupererOctetEnMemoire( uchar modeAdressage );
 
 // Fonction permettant de récupérer un mot (16 bits) en mémoire, connaissant
 // le mode d'adressage pour y accéder.

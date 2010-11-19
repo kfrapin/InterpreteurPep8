@@ -116,6 +116,29 @@ void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter )
 #endif
 }
 
+// ATTENTION
+//---------------------------------------------------------------------------------------------------------------------
+// Cette fonction est prevue pour charger l'image du systeme d'exploitation
+// fournie avec l'application, et n'est pas generique, elle necessiterait quelques
+// traitements supplémentaires pour le devenir
+//----------------------------------------------------------------------------------------------------------------------
+// Fonction permettant de charger l'image du système d'exploitation
+// en fin de memoire (ie, derniere instruction a l'adresse TAILLE_MEMOIRE_MAX)
+void ChargerSystemeExploitation( FILE * fichierOS )
+{
+#ifdef DEBUG
+    printf( "+ ChargerSystemeExploitation." RET);
+#endif
+
+    // On charge a partir de l'adresse 64599 (0xFC57)
+    // car on connait la taille de l'image de l'OS
+    RecopierFichierEnMemoire( fichierOS, memoire, 64599 );
+
+#ifdef DEBUG
+    printf( "- ChargerSystemeExploitation." RET);
+#endif
+}
+
 // Fonction permettant de decaler un registre vers la droite
 void inline DecalerDroiteRegistre( uint * registre )
 {
@@ -325,6 +348,27 @@ schar ExecuterCHARI( uchar opcodeDroite )
 
 #ifdef DEBUG
     printf( "- ExecuterCHARI." RET);
+#endif
+}
+
+schar ExecuterCHARO( uchar opcodeDroite )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterCHARO." RET);
+#endif
+
+    // Mise a jour de l'operande IR
+    MettreAJourOperandeIR( );
+
+    // Récupération du mode d'adressage et de la donnée
+    uchar adressage = opcodeDroite & 7;
+    uchar valeurRecuperee = RecupererOctetEnMemoire( adressage );
+
+    // Affichage de cette valeur sur la sortie standard
+    printf( "%c", valeurRecuperee );
+
+#ifdef DEBUG
+    printf( "- ExecuterCHARO." RET);
 #endif
 }
 
@@ -641,33 +685,20 @@ schar ExecuterInstGr1(uchar opcodeDroite)
 
     // Ici, on sait que : opcodeFin > MOVFLGA_FIN
     // Donc certains tests ont pu être supprimés, et on sait qu'on a besoin de
-    // récupérer l'opérande passé à l'instruction
+    // récupérer l'opérande passée à l'instruction
     MettreAJourOperandeIR( );
+    uchar modeAdresssage = ( opcodeDroite & 1 );
 
     if( opcodeDroite <= BR_FIN_S )
     {
-        if( (opcodeDroite & 1) == 0 )
-        // Adressage immédiat
-        {
-            // On met dans le registre PC la valeur fournit en opérande
-            RecopierOperandeDansPC( );
-        }
-        // Adressage indexé
-        // TODO à mettre en place
+    	registrePC = RecupererMotEnMemoire( modeAdresssage );
     }
 
     else if( opcodeDroite <= BRLE_FIN_S )
     {
         if( (codeZ == 1) || (codeN == 1) )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdresssage );
         }
 
     }
@@ -676,14 +707,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
     {
         if( codeN == 1 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdresssage );
         }
     }
 
@@ -692,14 +716,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
 
         if( codeZ == 1 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdresssage );
         }
     }
 
@@ -707,14 +724,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
     {
         if( codeZ == 0 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdresssage );
         }
         
     }
@@ -724,14 +734,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
         // Si on arrive ici, instruction = BRGE
         if( codeN == 0 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdresssage );
         }
 
     }
@@ -753,17 +756,11 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
+        uchar modeAdressage = (opcodeDroite & 1);
 
         if( (codeN == 0) && (codeZ == 0) )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdressage );
         }
         return;
     }
@@ -771,17 +768,11 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
+        uchar modeAdressage = (opcodeDroite & 1);
 
         if( codeV == 1 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdressage );
         }
         return;
     }
@@ -789,17 +780,11 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
+        uchar modeAdressage = (opcodeDroite & 1);
 
         if( codeC == 1 )
         {
-            if( (opcodeDroite & 1) == 0 )
-            // Adressage immédiat
-            {
-                // On met dans le registre PC la valeur fournit en opérande
-                RecopierOperandeDansPC( );
-            }
-            // Adressage indexé
-            // TODO à mettre en place
+        	registrePC = RecupererMotEnMemoire( modeAdressage );
         }
         return;
     }
@@ -807,18 +792,12 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
+        uchar modeAdressage = (opcodeDroite & 1);
 
         // On sauvegarde le registrePC sur la pile
         EmpilerMot( registrePC );
 
-        if( (opcodeDroite & 1) == 0 )
-        // Adressage immédiat
-        {
-            // On met dans le registre PC la valeur fournit en opérande
-            RecopierOperandeDansPC( );
-        }
-        // Adressage indexé
-        // TODO à mettre en place
+        registrePC = RecupererMotEnMemoire( modeAdressage );
         return;
     }
 
@@ -928,7 +907,7 @@ schar ExecuterInstGr5( uchar opcodeDroite)
 	if( opcodeDroite <= STRO_FIN_S )
 	{
 		// TODO : a implementer
-		return;
+		//return;
 	}
 
 	// On est sur l'operation CHARI
@@ -949,7 +928,7 @@ schar ExecuterInstGr6( uchar opcodeDroite )
 
     if( opcodeDroite <= CHARO_FIN_S )
     {
-
+    	ExecuterCHARO( opcodeDroite );
     }
     else
     // Opération RETn
@@ -1151,7 +1130,7 @@ uint LireMotEnMemoire( uint adresse )
 }
 
 // Fonction permettant de lire un octet (8 bits) en mémoire
-uint LireOctetEnMemoire( uint adresse )
+uchar LireOctetEnMemoire( uint adresse )
 {
 #ifdef DEBUG
     printf( "+ LireOctetEnMemoire." RET);
@@ -1329,7 +1308,9 @@ void MettreAJourOperandeIR( )
 }
 
 // Fonction permettant de recopier un fichier dans une zone mémoire
-void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire )
+// a partir de l'index indexDebut
+void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire, uint indexDebut )
+
 {
 #ifdef DEBUG
     printf( "+ RecopierFichierEnMemoire." RET);
@@ -1337,16 +1318,14 @@ void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire )
     // On lit le premier caractere
     uint caracLu = fgetc( fichier );
 
-    uint index = 0;
-
-    while( caracLu != EOF )
-    {
+	while( caracLu != EOF )
+	{
 #ifdef DEBUG
-        printf( TAB "Caractere copie en memoire : %d" RET, caracLu );
+    printf( TAB "Caractere copie en memoire[%u] : %d" RET, indexDebut, caracLu );
 #endif
-        memoire[index++] = caracLu;
-        caracLu = fgetc( fichier );
-    }
+    	memoire[indexDebut++] = caracLu;
+    	caracLu = fgetc( fichier );
+	}
 
 #ifdef DEBUG
     printf( "- RecopierFichierEnMemoire." RET);
@@ -1541,13 +1520,13 @@ uint RecupererMotEnMemoire( uchar modeAdressage )
 // le mode d'adressage pour y accéder.
 // ATTENTION : la variable operandeIR, doit auparavant
 // avoir été mise à jour.
-uint RecupererOctetEnMemoire( uchar modeAdressage )
+uchar RecupererOctetEnMemoire( uchar modeAdressage )
 {
 #ifdef DEBUG
     printf( "+ RecupererOctetEnMemoire." RET);
 #endif
 
-    uint valeurRecuperee = 0;
+    uchar valeurRecuperee = 0;
     switch( modeAdressage )
     {
         case IMMEDIAT:
