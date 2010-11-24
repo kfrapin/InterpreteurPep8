@@ -989,7 +989,7 @@ schar ExecuterInstGr3( uchar opcodeDroite )
     }
 
     // Sinon on est sur une opération NOP
-    // On ne fait rien
+    AppelerTrapHandler( );
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr3." RET);
