@@ -27,6 +27,7 @@
 #define	GLOBALES_H
 
 //--------------------------------------------------- INCLUDE SYSTEMES
+#include <stdio.h>
 
 //--------------------------------------------------- INCLUDE PERSONNELS
 #include "typedefs.h"
@@ -50,7 +51,7 @@ extern uint registreSP;
 extern uchar instructionIR;
 extern uint operandeIR;
 
-
+extern FILE * fichierTest;
 
 #endif	/* GLOBALES_H */
 

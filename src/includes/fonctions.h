@@ -61,10 +61,6 @@ void inline EcrireMotEnMemoire( uint valeur, uint adresse );
 // Fonction permettant d'ecrire un octet (8 bits) en memoire
 void inline EcrireOctetEnMemoire( uint valeur, uint adresse );
 
-// Fonction permettant d'empiler la donnee sur 1 mot
-// de 16 bits, en mettant à jour le registreSP
-void EmpilerMot( uint donnee );
-
 // Fonction permettant d'executer l'instruction ADDr 
 // en fonction des 4 bits de droite
 schar ExecuterADDr( uchar opcodeDroite );

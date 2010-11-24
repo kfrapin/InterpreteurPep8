@@ -35,8 +35,7 @@
 
 // Define utilisé pour effectuer des tests, debugs
 // #define TEST
-#define DEBUG
-
+// #define DEBUG
 
 //--------------------------------------------------------- VECTEURS INTERRUPTIONS
 // Emplacement memoire contenant l'adresse

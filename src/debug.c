@@ -79,14 +79,14 @@ void inline AfficherValeurRegistreA( )
 // du registre PC
 void inline AfficherValeurRegistrePC( )
 {
-    printf( TAB "Valeur registrePC : %u." RET, (usint) registrePC);
+    printf( TAB "Valeur registrePC : %X." RET, (usint) registrePC);
 }
 
 // Fonction permettant d'afficher la valeur
 // du registre SP
 void inline AfficherValeurRegistreSP( )
 {
-    printf( TAB "Valeur registreSP : %u." RET, (usint) registreSP);
+    printf( TAB "Valeur registreSP : %X." RET, (usint) registreSP);
 }
 
 // Fonction permettant d'afficher la valeur

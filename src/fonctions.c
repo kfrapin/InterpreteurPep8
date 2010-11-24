@@ -29,33 +29,6 @@
 #endif
 
 //--------------------------------------------------- FONCTIONS
-// Fonction permettant d'empiler la donnee sur 1 mot
-// de 16 bits, en mettant à jour le registreSP
-void EmpilerMot( uint donnee )
-{
-#ifdef DEBUG
-    printf( "+ EmpilerMot." RET);
-    printf( TAB SEP_AVT_MAJ "registreSP" RET );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
-#endif
-    
-    // On coupe la donnee en 2 x 8 bits
-    uchar bitsDroite = (uchar) donnee;
-    uchar bitsGauche = (uchar) (donnee >> 8);
-
-    // On sauvegarde d'abord les bits de droite,
-    // et ensuite ceux de gauche
-    memoire[--registreSP] = bitsDroite;
-    memoire[--registreSP] = bitsGauche;
-    
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreSP" RET );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
-    printf( "- EmpilerMot." RET);
-#endif    
-}
 
 // Fonction permettant d'ajouter une valeur a un registre
 void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter )
@@ -134,7 +107,7 @@ void AppelerTrapHandler(  )
     uint temp = LireMotEnMemoire( ADR_MEM_SP_SYS );
     EcrireOctetEnMemoire( instructionIR, ( temp - 1 ) );
     EcrireMotEnMemoire( registreSP, ( temp - 3 ) );
-    EcrireMotEnMemoire( registrePC, ( temp - 5 ) );
+    EcrireMotEnMemoire( registrePC , ( temp - 5 ) );
     EcrireMotEnMemoire( registreX,  ( temp - 7 ) );
     EcrireMotEnMemoire( registreA, ( temp - 9 ) );
     EcrireOctetEnMemoire( ConcatenerNZVC( ), ( temp - 10 ) );
@@ -256,8 +229,8 @@ void inline EcrireMotEnMemoire( uint valeur, uint adresse )
 #ifdef DEBUG
     printf( "+ EcrireMotEnMemoire." RET);
     printf( TAB SEP_AVT_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
-    printf( TAB "Valeur memoire[%x] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[(adresse+1) & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%X] : %X" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%X] : %X" RET,(adresse+1) & MASQUE_16_BITS, memoire[(adresse+1) & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
 #endif
 
@@ -267,12 +240,15 @@ void inline EcrireMotEnMemoire( uint valeur, uint adresse )
     // Puis les 8 bits de droite
     memoire[ ( adresse + 1 ) & MASQUE_16_BITS ] =  valeur;
 
+    putchar( '\0' );
+
+// BUG : DEBUG agissant sur l'instruction DECO
 #ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
-    printf( TAB "Valeur memoire[%x] : %u" RET,(adresse+1) & MASQUE_16_BITS, memoire[ (adresse+1) & MASQUE_16_BITS] );
-    printf( TAB SEP_FIN RET );
-    printf( "- EcrireMotEnMemoire." RET);
+   printf( TAB SEP_APR_MAJ "memoire[ ]" RET );
+   printf( TAB "Valeur memoire[%X] : %X" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+   printf( TAB "Valeur memoire[%X] : %X" RET,(adresse+1) & MASQUE_16_BITS, memoire[ (adresse+1) & MASQUE_16_BITS] );
+   printf( TAB SEP_FIN RET );
+   printf( "- EcrireMotEnMemoire." RET);
 #endif
 }
 
@@ -282,7 +258,7 @@ void inline EcrireOctetEnMemoire( uint valeur, uint adresse )
 #ifdef DEBUG
     printf( "+ EcrireOctetEnMemoire." RET);
     printf( TAB SEP_AVT_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%X] : %X" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
 #endif
 
@@ -291,7 +267,7 @@ void inline EcrireOctetEnMemoire( uint valeur, uint adresse )
 
 #ifdef DEBUG
     printf( TAB SEP_APR_MAJ "memoire[ ]" RET );
-    printf( TAB "Valeur memoire[%x] : %u" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
+    printf( TAB "Valeur memoire[%X] : %X" RET, (adresse & MASQUE_16_BITS), memoire[adresse & MASQUE_16_BITS] );
     printf( TAB SEP_FIN RET );
     printf( "- EcrireOctetEnMemoire." RET);
 #endif
@@ -333,6 +309,7 @@ schar ExecuterADDr( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterADDr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction ANDr
@@ -383,6 +360,7 @@ schar ExecuterANDr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterANDr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction CHARI
@@ -413,6 +391,7 @@ schar ExecuterCHARI( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterCHARI." RET);
 #endif
+    return;
 }
 
 schar ExecuterCHARO( uchar opcodeDroite )
@@ -429,11 +408,12 @@ schar ExecuterCHARO( uchar opcodeDroite )
     uchar valeurRecuperee = RecupererOctetEnMemoire( adressage );
 
     // Affichage de cette valeur sur la sortie standard
-    printf( "%c", valeurRecuperee );
+    putchar( valeurRecuperee );
 
 #ifdef DEBUG
     printf( "- ExecuterCHARO." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction LDBYTEr
@@ -484,6 +464,7 @@ schar ExecuterLDBYTEr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterLDBYTEr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction LDr
@@ -530,6 +511,7 @@ schar ExecuterLDr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterLDr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction CPr
@@ -569,6 +551,7 @@ schar ExecuterCPr( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterCPr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction ORr
@@ -619,6 +602,7 @@ schar ExecuterORr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterORr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction RETTR
@@ -637,9 +621,9 @@ schar ExecuterRETTR(  )
     // Remise en place du contexte present avant l'appel au trap handler
     // Codes de condition
     uchar codesNZVC = LireOctetEnMemoire( registreSP );
-    codeN = ( codesNZVC & 8 );
-    codeZ = ( codesNZVC & 4 );
-    codeV = ( codesNZVC & 2 );
+    codeN = ( ( codesNZVC & 8 ) != 0 ) ? 1 : 0;
+    codeZ = ( ( codesNZVC & 4 ) != 0 ) ? 1 : 0;
+    codeV = ( ( codesNZVC & 2 ) != 0 ) ? 1 : 0;
     codeC = ( codesNZVC & 1 );
 
     // Registres
@@ -657,6 +641,7 @@ schar ExecuterRETTR(  )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterRETTR." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction ROLr
@@ -699,6 +684,7 @@ schar ExecuterROLr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterROLr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction RORr
@@ -741,6 +727,7 @@ schar ExecuterRORr( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterRORr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -786,6 +773,13 @@ schar ExecuterInstGr1(uchar opcodeDroite)
     // récupérer l'opérande passée à l'instruction
     MettreAJourOperandeIR( );
     uchar modeAdresssage = ( opcodeDroite & 1 );
+
+    // Il faut convertir le mode d'adressage INDEXE pour qu'il puisse etre reconnu
+    // dans la fonction RecupererMotEnMemoire
+    if( modeAdresssage == 1 )
+    {
+    	modeAdresssage = INDEXE;
+    }
 
     if( opcodeDroite <= BR_FIN_S )
     {
@@ -840,6 +834,7 @@ schar ExecuterInstGr1(uchar opcodeDroite)
 #ifdef DEBUG
     printf( "- ExecuterInstGr1." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -850,11 +845,19 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     printf( "+ ExecuterInstGr2." RET);
 #endif
 
+    // Recuperation du mode d'adressage
+    // IMMEDIAT ou INDEXE
+    // (Pas utile pour toutes les opérations)
+    uchar modeAdressage = (opcodeDroite & 1);
+    if( modeAdressage == 1 )
+    {
+    	modeAdressage = INDEXE;
+    }
+
     if( opcodeDroite <= BRGT_FIN_S )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-        uchar modeAdressage = (opcodeDroite & 1);
 
         if( (codeN == 0) && (codeZ == 0) )
         {
@@ -866,7 +869,6 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-        uchar modeAdressage = (opcodeDroite & 1);
 
         if( codeV == 1 )
         {
@@ -878,7 +880,6 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-        uchar modeAdressage = (opcodeDroite & 1);
 
         if( codeC == 1 )
         {
@@ -890,10 +891,10 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-        uchar modeAdressage = (opcodeDroite & 1);
 
         // On sauvegarde le registrePC sur la pile
-        EmpilerMot( registrePC );
+        registreSP -= 2;
+        EcrireMotEnMemoire( registrePC, registreSP );
 
         registrePC = RecupererMotEnMemoire( modeAdressage );
         return;
@@ -967,6 +968,7 @@ schar ExecuterInstGr2( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterInstGr2." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -992,6 +994,7 @@ schar ExecuterInstGr3( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterInstGr3." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -1002,18 +1005,16 @@ schar ExecuterInstGr4( uchar opcodeDroite )
     printf( "+ ExecuterInstGr4." RET);
 #endif
 
-    if( opcodeDroite <= DECI_FIN_S )
-    {
-    	AppelerTrapHandler(  );
-    	return;
-    }
+    // On met a jour l'operande
+    MettreAJourOperandeIR( );
 
-    // Sinon operation DECO
-
+    // Operation DECI ou DECO -> Appel du Trap Handler
+   	AppelerTrapHandler(  );
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr4." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -1026,8 +1027,9 @@ schar ExecuterInstGr5( uchar opcodeDroite)
 
 	if( opcodeDroite <= STRO_FIN_S )
 	{
-		// TODO : a implementer
-		//return;
+		MettreAJourOperandeIR( );
+		AppelerTrapHandler( );
+		return;
 	}
 
 	// On est sur l'operation CHARI
@@ -1036,6 +1038,7 @@ schar ExecuterInstGr5( uchar opcodeDroite)
 #ifdef DEBUG
     printf( "- ExecuterInstGr5." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -1059,6 +1062,7 @@ schar ExecuterInstGr6( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterInstGr6." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction du groupe
@@ -1086,6 +1090,7 @@ schar ExecuterInstGr7( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterInstGr7." RET);
 #endif
+    return;
 }
 
 
@@ -1108,10 +1113,8 @@ schar ExecuterRETn( uchar opcodeDroite )
     registreSP += taille;
 
     // On met à jour le registre PC, et on désempile
-    // 8 bits de gauche
-    registrePC = 0 | ( memoire[registreSP++] << 8 );
-    // 8 bits de droite
-    registrePC = registrePC | memoire[registreSP++];
+    registrePC = LireMotEnMemoire( registreSP );
+    registreSP += 2;
 
 #ifdef DEBUG
     printf( TAB SEP_APR_MAJ "registrePC, registreSP" RET );
@@ -1120,6 +1123,7 @@ schar ExecuterRETn( uchar opcodeDroite )
     printf( TAB SEP_FIN RET );
     printf( "- ExecuterRETn." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction STr
@@ -1155,6 +1159,7 @@ schar ExecuterSTr( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterSTr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction STBYTEr
@@ -1190,6 +1195,7 @@ schar ExecuterSTBYTEr( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterSTBYTEr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant d'executer l'instruction r
@@ -1227,6 +1233,7 @@ schar ExecuterSUBr( uchar opcodeDroite )
 #ifdef DEBUG
     printf( "- ExecuterSUBr." RET);
 #endif
+    return;
 }
 
 // Fonction permettant de lire un mot (16 bits) en mémoire
@@ -1346,7 +1353,7 @@ void inline MettreAJourN( uint valeurRegistre )
     printf( TAB SEP_FIN RET );
 #endif
 
-    codeN = (((valeurRegistre >> 15) & 1) == 1) ? 1 : 0;
+    codeN = (((valeurRegistre >> 15) & 1) == 1 ) ? 1 : 0;
 
 #ifdef DEBUG
     printf( TAB SEP_APR_MAJ "codeN" RET );
@@ -1441,7 +1448,7 @@ void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire, uint indexDebut 
 	while( caracLu != EOF )
 	{
 #ifdef DEBUG
-    printf( TAB "Caractere copie en memoire[%u] : %d" RET, indexDebut, caracLu );
+    printf( TAB "Caractere copie en memoire[%X] : %X" RET, indexDebut, caracLu );
 #endif
     	memoire[indexDebut++] = caracLu;
     	caracLu = fgetc( fichier );

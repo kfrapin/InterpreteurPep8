@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     // Fichier fourni en paramètre ?
 	if( argc < 3 )
 	{
-		puts( "La syntaxe attendue est : ./interpreteur <imageOS> <fichier>" RET );
+		printf( "La syntaxe attendue est : ./interpreteur <imageOS> <fichier>" RET );
 		return EXIT_FAILURE;
 	}
 
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
 	// On charge le systeme d'exploitation Pep8
 	uchar * imageOS = ( uchar * ) argv[1];
-	FILE * fichierOS = ( FILE * ) fopen( imageOS, "rb" );
+	FILE * fichierOS = fopen( imageOS, "rb" );
 	if( fichierOS == NULL )
 	{
 		printf( "Impossible d'ouvrir le fichier : %s" RET, imageOS );
@@ -69,24 +69,23 @@ int main(int argc, char** argv) {
 	uchar * nomFichierEntree = ( uchar *  ) argv[2];
 
 	// On tente d'ouvrir ce fichier en lecture de manière
-	FILE * fichierEntree = ( FILE * ) fopen( nomFichierEntree, "rb" );
+	FILE * fichierEntree = fopen( nomFichierEntree, "rb" );
 	if( fichierEntree == NULL )
 	{
 		printf( "Impossible d'ouvrir le fichier : %s" RET, nomFichierEntree );
 		return EXIT_FAILURE;
 	}
 
-        // On recopie le fichier en mémoire a partir de l'adresse 0
-        RecopierFichierEnMemoire( fichierEntree, memoire, 0 );
+	// On recopie le fichier en mémoire a partir de l'adresse 0
+	RecopierFichierEnMemoire( fichierEntree, memoire, 0 );
 
-        // On interprète les insctruction
-        registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
-        registrePC = 0;
-        instructionIR = memoire[registrePC++];
+	// On interprète les insctruction
+	registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
+	registrePC = 0;
+	instructionIR = memoire[registrePC++];
 
-        // Variable permettant de savoir si l'exécution s'est bien passée
-        schar retourExec = 0;
-
+	// Variable permettant de savoir si l'exécution s'est bien passée
+	schar retourExec = 0;
 
         // L'overhead est considérable
         while( (instructionIR != STOP) && (retourExec != EXECUTION_KO) )
@@ -171,8 +170,8 @@ int main(int argc, char** argv) {
             instructionIR = memoire[registrePC++];
         }
 
-    // Retour a la ligne avant la fin du programme
-    printf( RET );
+    // Caractere de fin de retour à la fin du programme
+    putchar( '\n' );
 
     return (EXIT_SUCCESS);
 }

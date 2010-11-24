@@ -55,3 +55,6 @@ uint registreSP;
 
 uchar instructionIR = 0;
 uint operandeIR = 0;
+
+FILE * fichierTest = 0;
+
