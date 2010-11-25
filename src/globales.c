@@ -31,6 +31,14 @@
 
 
 //--------------------------------------------------- GLOBALES
+// Variables permettant de savoir si CHARI
+// doit lire sur l'entree standard ou dans
+// le fichier fichierEntree
+uchar entreeLecture = ENTREE_STDIN;
+
+// Fichier dans lequel va lire CHARI lors d'un
+// chargement de programme
+FILE * fichierEntree = NULL;
 
 //----------------------------------------- CODE DE CONDITIONS
 // Tous les codes sont initialisés à zéro
@@ -55,6 +63,4 @@ uint registreSP;
 
 uchar instructionIR = 0;
 uint operandeIR = 0;
-
-FILE * fichierTest = 0;
 

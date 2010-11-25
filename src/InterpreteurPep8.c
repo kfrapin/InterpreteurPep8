@@ -20,168 +20,88 @@
  * ----------------------------------------------------------------------------
  */
 
-
+//--------------------------------------------------- INCLUDE SYSTEMES
 #include <stdio.h>
 #include <stdlib.h>
 
+//--------------------------------------------------- INCLUDE PERSONNELS
 #include "includes/affichage.h"
 #include "includes/constantes.h"
 #include "includes/erreurs.h"
 #include "includes/fonctions.h"
 #include "includes/globales.h"
+#include "includes/menu.h"
 #include "includes/tests.h"
 
-
+//--------------------------------------------------- FONCTIONS
 #ifndef TEST
-
 
 int main(int argc, char** argv) {
 
-    // Fichier fourni en paramètre ?
-	if( argc < 3 )
-	{
-		printf( "La syntaxe attendue est : ./interpreteur <imageOS> <fichier>" RET );
-		return EXIT_FAILURE;
-	}
+	///////////////////////////////////////////////////////////////////// ALLOCATION MEMOIRE
 
-	// On créé un tableau qui représente la mémoire utilisée pour stocker
+	// On cree un tableau qui represente la memoire utilisee pour stocker
     // le programme Pep8 et le systeme d'exploitation
 	memoire = malloc(TAILLE_MEMOIRE_MAX);
-        if( memoire == NULL )
-        {
+	if( memoire == NULL )
+	{
 #ifdef DEBUG
     printf( "Impossible d'allouer la mémoire de Pep8." RET );
 #endif
-            return EXIT_FAILURE;
-        }
-
-	// On charge le systeme d'exploitation Pep8
-	uchar * imageOS = ( uchar * ) argv[1];
-	FILE * fichierOS = fopen( imageOS, "rb" );
-	if( fichierOS == NULL )
-	{
-		printf( "Impossible d'ouvrir le fichier : %s" RET, imageOS );
-		return EXIT_FAILURE;
-	}
-	ChargerSystemeExploitation( fichierOS );
-
-	// On récupère le nom de fichier fourni en paramètre
-	uchar * nomFichierEntree = ( uchar *  ) argv[2];
-
-	// On tente d'ouvrir ce fichier en lecture de manière
-	FILE * fichierEntree = fopen( nomFichierEntree, "rb" );
-	if( fichierEntree == NULL )
-	{
-		printf( "Impossible d'ouvrir le fichier : %s" RET, nomFichierEntree );
 		return EXIT_FAILURE;
 	}
 
-	// On recopie le fichier en mémoire a partir de l'adresse 0
-	RecopierFichierEnMemoire( fichierEntree, memoire, 0 );
+	///////////////////////////////////////////////////////////////////// PRESENTATION MENU
+	sint toucheSaisie;
+	schar * emplacementFichier;
+	FILE * fichierACharger;
 
-	// On interprète les insctruction
-	registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
-	registrePC = 0;
-	instructionIR = memoire[registrePC++];
+	while( (toucheSaisie = AfficherMenu( ) )  != 'Q' )
+	{
+		// On remet les varibales a NULL
+		fichierACharger = NULL;
+		emplacementFichier = NULL;
 
-	// Variable permettant de savoir si l'exécution s'est bien passée
-	schar retourExec = 0;
+		switch( toucheSaisie )
+		{
+			//------------------------------------ CHARGEMENT DU SYTEME D'EXPLOITATION
+			case '1':
+				AfficherMenuChargementOS( );
+				break;
 
-        // L'overhead est considérable
-        while( (instructionIR != STOP) && (retourExec != EXECUTION_KO) )
-        {
-#ifdef DEBUG
-    printf( RET "> Instruction lue : %d." RET, instructionIR );
-    printf( SEP_FIN RET );
-#endif
-            // On récupère les 4 bits de gauche de l'instruction
-            uchar opcodeGauche =  ( instructionIR >> 4 );
+			//--------------------------------------------------- CHARGEMENT D'UN PROGRAMME
+			case '2':
+				AfficherMenuChargementProgramme( );
+				break;
 
-            // On récupère les 4 bits de droite de l'instruction
-            uchar opcodeDroite = 15 & instructionIR;
+			//------------------------------------------------------ EXECUTION D'UN PROGRAMME
+			case '3':
+				registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
+				registrePC = 0;
+				puts( MENU_PROGRAMME_DEBUT_EXEC );
+				ExecuterInstructions( );
+				putchar( RET_CHAR );
+				puts( MENU_PROGRAMME_FIN_EXEC );
+				break;
 
-            switch( opcodeGauche )
-            {
-            	case GRINST1:
-            		retourExec = ExecuterInstGr1( opcodeDroite );
-            		break;
+			//--------------------------------------------------------------------- SAISIE INCORRECTE
+			default:
+				puts( MENU_ERREUR_SAISIE );
+				break;
+		}
+	}
 
-            	case GRINST2:
-            		retourExec = ExecuterInstGr2( opcodeDroite );
-            		break;
-
-            	case GRINST3:
-            		retourExec = ExecuterInstGr3( opcodeDroite );
-            		break;
-
-            	case GRINST4:
-            		retourExec = ExecuterInstGr4( opcodeDroite );
-            		break;
-
-            	case GRINST5:
-            		retourExec = ExecuterInstGr5( opcodeDroite );
-            		break;
-
-            	case GRINST6:
-            		retourExec = ExecuterInstGr6( opcodeDroite );
-            		break;
-
-            	case GRINST7:
-            		 retourExec = ExecuterInstGr7( opcodeDroite );
-            		 break;
-
-            	case ADDR_DEB:
-            		retourExec = ExecuterADDr( opcodeDroite );
-            		break;
-
-            	case SUBR_DEB:
-            		retourExec = ExecuterSUBr( opcodeDroite );
-            		break;
-
-            	case ANDR_DEB:
-            		retourExec = ExecuterANDr( opcodeDroite );
-            		break;
-
-            	case ORR_DEB:
-            		retourExec = ExecuterORr( opcodeDroite );
-            		break;
-
-            	case CPR_DEB:
-            		retourExec = ExecuterCPr( opcodeDroite );
-            		break;
-
-            	case LDR_DEB:
-            		retourExec = ExecuterLDr( opcodeDroite );
-            		break;
-
-            	case LDBYTER_DEB:
-            		retourExec = ExecuterLDBYTEr( opcodeDroite );
-            		break;
-
-            	case STR_DEB:
-            		retourExec = ExecuterSTr( opcodeDroite );
-            		break;
-
-            	case STBYTER_DEB:
-            		retourExec = ExecuterSTBYTEr( opcodeDroite );
-            		break;
-            }
-
-            instructionIR = memoire[registrePC++];
-        }
-
-    // Caractere de fin de retour à la fin du programme
-    putchar( '\n' );
+    // Caractere de retour chariot a la fin du programme
+    putchar( RET_CHAR );
 
     return (EXIT_SUCCESS);
 }
 
+//--------------------------------------------------- FONCTIONS TESTS
 #else
 
 int main(int argc, char** argv)
 {
-    // TESTS OK
-    //---------------------
-    testDeterminerInstGr1();
+    // Mise en place de tests unitaires possible ici
 }
 #endif

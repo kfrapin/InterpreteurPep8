@@ -37,6 +37,15 @@
 // #define TEST
 // #define DEBUG
 
+
+//--------------------------------------------------------- ENTREES DE LECTURE
+// Indique que CHARI doit lire sur l'entree standard
+#define ENTREE_STDIN (1)
+
+// Indique que CHARI doit lire le fichier "fichierEntree" au lieu
+// de la sortie standard
+#define ENTREE_FICHIER (2)
+
 //--------------------------------------------------------- VECTEURS INTERRUPTIONS
 // Emplacement memoire contenant l'adresse
 // du pointeur de pile utilisateur

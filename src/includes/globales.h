@@ -33,6 +33,8 @@
 #include "typedefs.h"
 
 //--------------------------------------------------- GLOBALES
+extern uchar entreeLecture;
+extern FILE * fichierEntree;
 
 //----------------------------------------- CODE DE CONDITIONS
 extern uchar codeN;
@@ -51,7 +53,7 @@ extern uint registreSP;
 extern uchar instructionIR;
 extern uint operandeIR;
 
-extern FILE * fichierTest;
+
 
 #endif	/* GLOBALES_H */
 

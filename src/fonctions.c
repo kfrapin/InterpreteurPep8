@@ -135,6 +135,37 @@ void AppelerTrapHandler(  )
 // fournie avec l'application, et n'est pas generique, elle necessiterait quelques
 // traitements supplémentaires pour le devenir
 //----------------------------------------------------------------------------------------------------------------------
+
+// Fonction permettant de charger un programme en memoire
+void ChargerProgramme( FILE * fichierProg )
+{
+#ifdef DEBUG
+    printf( "+ ChargerProgramme." RET);
+#endif
+
+    // On positionne les registres pour appeler le loader
+    // du systeme d'exploitation
+    registreSP = LireMotEnMemoire( ADR_MEM_SP_SYS );
+    registrePC = LireMotEnMemoire( ADR_MEM_LOADER );
+
+    // On indique que CHARI devra lire dans le fichier
+    // fourni et non sur l'entree standard
+    fichierEntree = fichierProg;
+    entreeLecture = ENTREE_FICHIER;
+
+    // On lance l'execution du chargement
+    ExecuterInstructions( );
+
+    // On indique que maintenant CHARI devra lire
+    // sur l'entree standard
+    fichierEntree = NULL;
+    entreeLecture = ENTREE_STDIN;
+
+#ifdef DEBUG
+    printf( "- ChargerProgramme." RET);
+#endif
+}
+
 // Fonction permettant de charger l'image du système d'exploitation
 // en fin de memoire (ie, derniere instruction a l'adresse TAILLE_MEMOIRE_MAX)
 void ChargerSystemeExploitation( FILE * fichierOS )
@@ -374,8 +405,17 @@ schar ExecuterCHARI( uchar opcodeDroite )
 	// On met a jour l'operande qui va servir a savoir ou il faut stocker le caractere
 	MettreAJourOperandeIR( );
 
-	// On recupere un caractere au clavier et on le stocke en memoire
-	sint caractereSaisi = getchar( );
+	sint caractereSaisi = EOF;
+	if( entreeLecture == ENTREE_STDIN )
+	{
+		// On recupere un caractere au clavier et on le stocke en memoire
+		caractereSaisi = getchar( );
+	}
+	else if( entreeLecture == ENTREE_FICHIER )
+	{
+		// On recupere un caractere dans le fichier "fichierEntree"
+		caractereSaisi = getc( fichierEntree );
+	}
 
 	if( caractereSaisi == EOF )
 	// Erreur a la lecture
@@ -386,7 +426,7 @@ schar ExecuterCHARI( uchar opcodeDroite )
 	// On sait que le caractere lu est non signe
 	uchar modeAdressage = opcodeDroite & 7;
 
-	RecopierOctetRegistreEnMemoire( (uint) &caractereSaisi, modeAdressage );
+	RecopierOctetRegistreEnMemoire( ( uint ) &caractereSaisi, modeAdressage );
 
 #ifdef DEBUG
     printf( "- ExecuterCHARI." RET);
@@ -1093,6 +1133,102 @@ schar ExecuterInstGr7( uchar opcodeDroite )
     return;
 }
 
+void ExecuterInstructions( )
+{
+#ifdef DEBUG
+    printf( "+ ExecuterInstructions." RET);
+#endif
+
+	// Variable permettant de savoir si l'exécution s'est bien passée
+	schar retourExec = 0;
+	instructionIR = memoire[registrePC++];
+
+    while( (instructionIR != STOP) && (retourExec != EXECUTION_KO) )
+    {
+#ifdef DEBUG
+printf( RET "> Instruction lue : %d." RET, instructionIR );
+printf( SEP_FIN RET );
+#endif
+        // On récupère les 4 bits de gauche de l'instruction
+        uchar opcodeGauche =  ( instructionIR >> 4 );
+
+        // On récupère les 4 bits de droite de l'instruction
+        uchar opcodeDroite = 15 & instructionIR;
+
+        switch( opcodeGauche )
+        {
+        	case GRINST1:
+        		retourExec = ExecuterInstGr1( opcodeDroite );
+        		break;
+
+        	case GRINST2:
+        		retourExec = ExecuterInstGr2( opcodeDroite );
+        		break;
+
+        	case GRINST3:
+        		retourExec = ExecuterInstGr3( opcodeDroite );
+        		break;
+
+        	case GRINST4:
+        		retourExec = ExecuterInstGr4( opcodeDroite );
+        		break;
+
+        	case GRINST5:
+        		retourExec = ExecuterInstGr5( opcodeDroite );
+        		break;
+
+        	case GRINST6:
+        		retourExec = ExecuterInstGr6( opcodeDroite );
+        		break;
+
+        	case GRINST7:
+        		 retourExec = ExecuterInstGr7( opcodeDroite );
+        		 break;
+
+        	case ADDR_DEB:
+        		retourExec = ExecuterADDr( opcodeDroite );
+        		break;
+
+        	case SUBR_DEB:
+        		retourExec = ExecuterSUBr( opcodeDroite );
+        		break;
+
+        	case ANDR_DEB:
+        		retourExec = ExecuterANDr( opcodeDroite );
+        		break;
+
+        	case ORR_DEB:
+        		retourExec = ExecuterORr( opcodeDroite );
+        		break;
+
+        	case CPR_DEB:
+        		retourExec = ExecuterCPr( opcodeDroite );
+        		break;
+
+        	case LDR_DEB:
+        		retourExec = ExecuterLDr( opcodeDroite );
+        		break;
+
+        	case LDBYTER_DEB:
+        		retourExec = ExecuterLDBYTEr( opcodeDroite );
+        		break;
+
+        	case STR_DEB:
+        		retourExec = ExecuterSTr( opcodeDroite );
+        		break;
+
+        	case STBYTER_DEB:
+        		retourExec = ExecuterSTBYTEr( opcodeDroite );
+        		break;
+        }
+
+        instructionIR = memoire[registrePC++];
+    }
+
+#ifdef DEBUG
+    printf( "- ExecuterInstructions." RET);
+#endif
+}
 
 // Fonction permettant d'executer l'instruction RETr
 // en fonction des 4 bits de droite

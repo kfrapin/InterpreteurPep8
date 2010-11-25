@@ -41,6 +41,9 @@ void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter );
 // d'effectuer un appel a une trap du systeme d'exploitation
 void AppelerTrapHandler(  );
 
+// Fonction permettant de charger un programme en memoire
+void ChargerProgramme( FILE * fichierProg );
+
 // Fonction permettant de charger l'image du système d'exploitation
 // en fin de memoire (ie, derniere instruction a l'adresse TAILLE_MEMOIRE_MAX)
 void ChargerSystemeExploitation( FILE * fichierOS );
@@ -80,6 +83,12 @@ schar ExecuterCHARO( uchar opcodeDroite );
 // Fonction permettant d'executer l'instruction CPr
 // en fonction des 4 bits de droite
 schar ExecuterCPr( uchar opcodeDroite );
+
+// Fonction permettant de lancer l'execution d'un programme
+// ou d'une interruption systeme
+// ATTENTION : les registres SP et PC devront avoir ete mis a
+// jour auparavant si necessaire
+void ExecuterInstructions(  );
 
 // Fonction permettant d'executer l'instruction LDBYTEr
 // en fonction des 4 bits de droite
