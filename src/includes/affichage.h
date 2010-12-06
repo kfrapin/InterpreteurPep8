@@ -27,6 +27,9 @@
 //--------------------------------------------------- INCLUDE PERSONNELS
 #include "typedefs.h"
 
+//--------------------------------------------------------- ERREUR COMMANDE UTILISATEUR
+#define ERREUR_CMD_UTILISATEUR "La syntaxe attendue est : InterpreteurPep8 [--os <imageOS>] [ <fichierProgramme> [...] ]"
+
 //--------------------------------------------------------- CONSTANTES AFFICHAGE GENERAL
 // Definition de la tabulation
 #define TAB "\t"
@@ -83,5 +86,13 @@
 
 // Separateur pour la fin d'execution du programme
 #define MENU_PROGRAMME_FIN_EXEC "////////////////////////////// FIN EXECUTION"
+
+
+//--------------------------------------------------------- CONSTANTES AFFICHAGE MODE BATCH
+// Separateur pour le debut d'execution du programme
+#define BATCH_PROGRAMME_DEBUT_EXEC "////////////////////////////// DEBUT EXECUTION : %s"
+
+// Separateur pour la fin d'execution du programme
+#define BATCH_PROGRAMME_FIN_EXEC "////////////////////////////// FIN EXECUTION : %s"
 
 #endif /* AFFICHAGE_H_ */

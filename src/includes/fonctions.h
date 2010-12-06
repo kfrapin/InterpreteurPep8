@@ -157,11 +157,18 @@ schar ExecuterSTr( uchar opcodeDroite );
 // en fonction des 4 bits de droite
 schar ExecuterSUBr( uchar opcodeDroite );
 
+// Fonction permettant de jouer les programmes passes
+// en parametre lors de l'appel de l'interpreteur
+void JouerProgrammesEnParametres( uchar debut, uchar fin, char * * nomsFichier );
+
 // Fonction permettant de lire un mot (16 bits) en mémoire
 uint LireMotEnMemoire( uint adresse );
 
 // Fonction permettant de lire un octet (8 bits) en mémoire
 uchar LireOctetEnMemoire( uint adresse );
+
+// Fonction permettant de vider la memoire du systeme Pep8
+void NettoyerMemoire( );
 
 // Fonction permetter d'effectuer un NOT sur un registre
 void inline NierRegistre( uint * regitre );

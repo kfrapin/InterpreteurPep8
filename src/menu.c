@@ -29,6 +29,7 @@
 
 //--------------------------------------------------- INCLUDE PERSONNELS
 #include "includes/affichage.h"
+#include "includes/globales.h"
 #include "includes/menu.h"
 
 //--------------------------------------------------- FONCTIONS
@@ -118,8 +119,8 @@ void AfficherMenuChargementOS( )
 	schar *emplacementFichier = AfficherDemandeEmplacement( CHARGEMENT_OS );
 
 	// On tente d'ouvrir le fichier
-	FILE * fichierACharger = fopen( emplacementFichier, "rb" );
-	if( fichierACharger == NULL )
+	fichierOS = fopen( emplacementFichier, "rb" );
+	if( fichierOS == NULL )
 	{
 #ifndef DEBUG
 		printf( MENU_ERREUR_OUVERTURE RET, emplacementFichier );
@@ -128,7 +129,7 @@ void AfficherMenuChargementOS( )
 	else
 	{
 		// On charge l'OS
-		ChargerSystemeExploitation( fichierACharger );
+		ChargerSystemeExploitation( fichierOS );
 #ifndef DEBUG
 	puts( MENU_OS_CHARGE );
 #endif

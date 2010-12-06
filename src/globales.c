@@ -40,6 +40,10 @@ uchar entreeLecture = ENTREE_STDIN;
 // chargement de programme
 FILE * fichierEntree = NULL;
 
+// Fichier contenant l'image binaire du systeme d'exploitation
+// Pep8
+FILE * fichierOS;
+
 //----------------------------------------- CODE DE CONDITIONS
 // Tous les codes sont initialisés à zéro
 uchar codeN = 0;

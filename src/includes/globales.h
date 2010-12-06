@@ -35,6 +35,7 @@
 //--------------------------------------------------- GLOBALES
 extern uchar entreeLecture;
 extern FILE * fichierEntree;
+extern FILE * fichierOS;
 
 //----------------------------------------- CODE DE CONDITIONS
 extern uchar codeN;

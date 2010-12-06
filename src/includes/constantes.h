@@ -20,6 +20,7 @@
  *
  *  La structure du fichier est la suivante :
  *
+ *  0./ Constantes definies pour le systeme d'exploitation
  *  1./ Constantes (arbitraires) pour définir les opcodes
  *  2./ Constantes permettant de savoir avec les 4 premiers bits :
  *          - Le groupe d'instructions auquel appartient l'opcode (cf. 3./)
@@ -37,6 +38,13 @@
 // #define TEST
 // #define DEBUG
 
+//------------------------------------------------------------------------------------
+//  0./ Constantes definies pour le systeme d'exploitation
+//-------------------------------------------------------------------------------------
+
+//--------------------------------------------------------- EMPLACEMENT OS
+// Emplacement de l'OS par defaut
+#define EMPLACEMENT_OS "systemeExploitation/OS.bin"
 
 //--------------------------------------------------------- ENTREES DE LECTURE
 // Indique que CHARI doit lire sur l'entree standard

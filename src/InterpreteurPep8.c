@@ -23,6 +23,7 @@
 //--------------------------------------------------- INCLUDE SYSTEMES
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 //--------------------------------------------------- INCLUDE PERSONNELS
 #include "includes/affichage.h"
@@ -50,6 +51,63 @@ int main(int argc, char** argv) {
 #endif
 		return EXIT_FAILURE;
 	}
+
+	///////////////////////////////////////////////////////////////////// VERIFICATION COMMANDE UTILISATEUR
+	if( argc > 1 )
+	{
+		if( ( strcmp( argv[1], "--os" ) == 0 ) && ( argc > 2 ) )
+		// On charge l'OS specifie en parametre
+		{
+			fichierOS = fopen( argv[2], "rb" );
+			if( fichierOS == NULL )
+			{
+#ifndef DEBUG
+	printf( MENU_ERREUR_OUVERTURE RET, argv[2] );
+#endif
+				return EXIT_FAILURE;
+			}
+
+			if( argc > 3 )
+			// On joue les programmes passes en parametres
+			{
+				JouerProgrammesEnParametres( 3, argc, argv );
+				return EXIT_SUCCESS;
+			}
+
+
+		}
+		else if( strcmp( argv[1], "--os" ) != 0 )
+		// On joue les programmes passes en parametres
+		{
+			fichierOS = fopen( EMPLACEMENT_OS, "rb" );
+			if( fichierOS == NULL )
+			{
+#ifndef DEBUG
+	printf( MENU_ERREUR_OUVERTURE RET, EMPLACEMENT_OS );
+#endif
+				return EXIT_FAILURE;
+			}
+			JouerProgrammesEnParametres( 1, argc, argv );
+			return EXIT_SUCCESS;
+		}
+		else
+		// Mauvaise saisie utilisateur
+		{
+			puts( ERREUR_CMD_UTILISATEUR );
+			return EXIT_FAILURE;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////// CHARGEMENT OS
+	fichierOS = fopen( EMPLACEMENT_OS, "rb" );
+	if( fichierOS == NULL )
+	{
+#ifndef DEBUG
+printf( MENU_ERREUR_OUVERTURE RET, EMPLACEMENT_OS );
+#endif
+		return EXIT_FAILURE;
+	}
+	ChargerSystemeExploitation( fichierOS );
 
 	///////////////////////////////////////////////////////////////////// PRESENTATION MENU
 	sint toucheSaisie;

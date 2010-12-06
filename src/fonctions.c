@@ -1334,6 +1334,58 @@ schar ExecuterSTBYTEr( uchar opcodeDroite )
     return;
 }
 
+// Fonction permettant de jouer les programmes passes
+// en parametre lors de l'appel de l'interpreteur
+void JouerProgrammesEnParametres( uchar debut, uchar fin, char * * nomsFichier )
+{
+#ifdef DEBUG
+    printf( "+ JouerProgrammesEnParametres." RET);
+#endif
+
+    schar * nomFichier;
+    FILE * fichierAJouer;
+    uchar i;
+    for( i = debut; i < fin; i++ )
+    {
+    		nomFichier = nomsFichier[i];
+    		fichierAJouer = fopen( nomFichier, "rb" );
+			if( fichierAJouer == NULL )
+			{
+#ifndef DEBUG
+	printf( MENU_ERREUR_OUVERTURE RET, nomFichier );
+#endif
+			}
+			else
+			{
+				// On nettoie la memoire
+				NettoyerMemoire( );
+
+				// On se remet au debut du fichier de l'OS
+				fseek( fichierOS, SEEK_SET, 0 );
+				// On charge l'OS en cas de corruption par le programme
+				// joue auparavant
+				ChargerSystemeExploitation( fichierOS );
+
+				// On charge le programme
+				ChargerProgramme( fichierAJouer );
+
+				// On lance le programme
+				registreSP = LireMotEnMemoire( ADR_MEM_SP_USER );
+				registrePC = 0;
+				registreA = 0; registreX = 0;
+				codeC = 0; codeN = 0; codeV = 0; codeZ = 0;
+				printf( BATCH_PROGRAMME_DEBUT_EXEC RET, nomFichier );
+				ExecuterInstructions( );
+				putchar( RET_CHAR );
+				printf( BATCH_PROGRAMME_FIN_EXEC RET, nomFichier );
+			}
+    }
+
+#ifdef DEBUG
+    printf( "- JouerProgrammesEnParametres." RET);
+#endif
+}
+
 // Fonction permettant d'executer l'instruction r
 // en fonction des 4 bits de droite
 schar ExecuterSUBr( uchar opcodeDroite )
@@ -1406,6 +1458,23 @@ uchar LireOctetEnMemoire( uint adresse )
     return memoire[ adresse & MASQUE_16_BITS ];
 }
 
+// Fonction permettant de vider la memoire du systeme Pep8
+void NettoyerMemoire( )
+{
+#ifdef DEBUG
+    printf( "+ NettoyerMemoire." RET);
+#endif
+
+    uint i;
+    for( i=0; i <= TAILLE_MEMOIRE_MAX; i++ )
+    {
+    	memoire[i] = 0;
+    }
+
+#ifdef DEBUG
+    printf( "- NettoyerMemoire." RET);
+#endif
+}
 
 // Fonction permetter d'effectuer un NOT sur un registre
 void inline NierRegistre( uint * registre )
