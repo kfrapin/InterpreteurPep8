@@ -37,13 +37,13 @@
 //--------------------------------------------------- FONCTIONS
 #ifndef TEST
 
-int main(int argc, char** argv) {
+int main(int argc, char * * argv) {
 
-	///////////////////////////////////////////////////////////////////// ALLOCATION MEMOIRE
+	///////////////////////////////////////////////////////////////////// ALLOCATION MEMOIRES
 
 	// On cree un tableau qui represente la memoire utilisee pour stocker
     // le programme Pep8 et le systeme d'exploitation
-	memoire = malloc(TAILLE_MEMOIRE_MAX);
+	memoire = malloc( TAILLE_MEMOIRE_MAX );
 	if( memoire == NULL )
 	{
 #ifdef DEBUG
@@ -51,6 +51,21 @@ int main(int argc, char** argv) {
 #endif
 		return EXIT_FAILURE;
 	}
+	// On nettoie la memoire
+	NettoyerMemoire( memoire, TAILLE_MEMOIRE_MAX );
+
+	// On cree un tableau de la meme taille que la memoire principale
+	// pour effectuer du predecodage
+	codePredecode = malloc( TAILLE_MEMOIRE_MAX );
+	if( codePredecode == NULL )
+	{
+#ifdef DEBUG
+    printf( "Impossible d'allouer la mémoire pour effectuer le prédécodage." RET );
+#endif
+		return EXIT_FAILURE;
+	}
+	// On nettoie la memoire
+	NettoyerMemoire( ( uchar * ) codePredecode, TAILLE_MEMOIRE_MAX );
 
 	///////////////////////////////////////////////////////////////////// VERIFICATION COMMANDE UTILISATEUR
 	if( argc > 1 )
@@ -155,11 +170,20 @@ printf( MENU_ERREUR_OUVERTURE RET, EMPLACEMENT_OS );
     return (EXIT_SUCCESS);
 }
 
-//--------------------------------------------------- FONCTIONS TESTS
 #else
-
+//--------------------------------------------------- FONCTIONS TESTS
 int main(int argc, char** argv)
 {
+	// Affichage permettant de savoir quel type d'entier a la meme taille
+	// que les entiers geres nativement par la machine physique
+	printf( "Size of ( unsigned int ) : %d bits" RET,  sizeof( unsigned int ) * 8 );
+	printf( "Size of ( unsigned long int ) : %d bits" RET,  sizeof( unsigned long int ) * 8 );
+	printf( "Size of ( unsigned short int ) : %d bits" RET,  sizeof( unsigned short int ) * 8 );
+
+	printf( "Size of ( signed int ) : %d bits" RET,  sizeof( signed int ) * 8 );
+	printf( "Size of ( signed long int ) : %d bits" RET,  sizeof( signed long int ) * 8 );
+	printf( "Size of ( signed short int ) : %d bits" RET,  sizeof( signed short int ) * 8 );
+
     // Mise en place de tests unitaires possible ici
 }
 #endif

@@ -44,27 +44,33 @@ FILE * fichierEntree = NULL;
 // Pep8
 FILE * fichierOS;
 
+// Reserve pour stocker des emplacements de fichiers
+char saisie [1024];
+
 //----------------------------------------- CODE DE CONDITIONS
 // Tous les codes sont initialisés à zéro
-uchar codeN = 0;
-uchar codeV = 0;
-uchar codeZ = 0;
-uchar codeC = 0;
+unint codeN = 0;
+unint codeV = 0;
+unint codeZ = 0;
+unint codeC = 0;
 
 //---------------------------------------- MEMOIRE
 uchar * memoire;
 
 //---------------------------------------- REGISTRES
 // Tous les registres sont initialisés à zéro
-uint registreA = 0;
-uint registreX = 0;
-uint registrePC = 0;
+unint registreA = 0;
+unint registreX = 0;
+unint registrePC = 0;
 
 // Pour empiler sur la pile, il faut décrémenter
 // le registreSP; et inversement pour dépiler.
 // Initialisation faite dans le programme principal.
-uint registreSP;
+unint registreSP;
 
 uchar instructionIR = 0;
-uint operandeIR = 0;
+unint operandeIR = 0;
+
+//---------------------------------------- PREDECODAGE
+predecodage * codePredecode;
 

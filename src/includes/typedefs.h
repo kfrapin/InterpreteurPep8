@@ -30,7 +30,7 @@
 
 //----------------------------------------- ENTIERS
 // Type uint : Entier sur 32 bits non signé
-typedef unsigned int uint;
+typedef unsigned int unint;
 
 // Type uint : Entier sur 32 bits signé
 typedef signed int sint;
@@ -47,6 +47,21 @@ typedef unsigned char uchar;
 
 // Type schar : Caractère sur 8 bits signé
 typedef signed char schar;
+
+//--------------------------------------------------- STRUCTURE
+// Structure utilise pour le predecodage
+typedef struct Predecodage
+{
+	// Code original predecode
+	unint opCodeOriginal;
+
+	// Registre predecode
+	unint registreUtilise;
+
+	// Mode d'adressage predecode
+	unint modeAdressage;
+
+} predecodage;
 
 #endif	/* TYPEDEFS_H */
 

@@ -29,6 +29,7 @@
 
 //--------------------------------------------------- INCLUDE PERSONNELS
 #include "includes/affichage.h"
+#include "includes/fonctions.h"
 #include "includes/globales.h"
 #include "includes/menu.h"
 
@@ -51,9 +52,6 @@ schar *  AfficherDemandeEmplacement( uchar typeChargement )
 	}
 	puts( MENU_SEP );
 
-	// Recuperation de l'emplacement
-	char saisie [1024];
-
 	// On ignore les retours a la ligne
 	schar toucheSaisie;
 	while( ( toucheSaisie = getchar( ) ) == '\n'  );
@@ -62,7 +60,13 @@ schar *  AfficherDemandeEmplacement( uchar typeChargement )
 	saisie[0] = toucheSaisie;
 
 	// On recupere le reste de l'emplacement
-	fgets( ( saisie + 1 ) , 1023, stdin );
+	if( fgets( ( saisie + 1 ) , 1023, stdin ) == NULL )
+	{
+#ifdef DEBUG
+	puts( "! AfficherDemandeEmplacement : Erreur à la lecture de l'emplacement saisi." );
+#endif
+		return NULL;
+	}
 
 	// On supprime le '\n' present a la fin
 	char * retourChariot = strchr( saisie, '\n'  );
@@ -106,7 +110,13 @@ sint AfficherMenu( )
 
 	// On recupere le reste de la chaine si plus d'un caractere a ete saisi
 	char vidageBuffer [1024];
-	fgets( vidageBuffer, 1024, stdin );
+	if( fgets( vidageBuffer, 1024, stdin ) == NULL )
+	{
+#ifdef DEBUG
+	puts( "! AfficherMenu : Erreur durant le vidage du buffer." );
+#endif
+		return EXIT_FAILURE;
+	}
 
 	return ( toucheSaisie  );
 }
@@ -116,15 +126,13 @@ sint AfficherMenu( )
 void AfficherMenuChargementOS( )
 {
 	// On demande l'emplacement a l'utilisateur
-	schar *emplacementFichier = AfficherDemandeEmplacement( CHARGEMENT_OS );
+	schar * emplacementFichier = AfficherDemandeEmplacement( CHARGEMENT_OS );
 
 	// On tente d'ouvrir le fichier
-	fichierOS = fopen( emplacementFichier, "rb" );
+	fichierOS = fopen( ( char * ) emplacementFichier, "rb" );
 	if( fichierOS == NULL )
 	{
-#ifndef DEBUG
 		printf( MENU_ERREUR_OUVERTURE RET, emplacementFichier );
-#endif
 	}
 	else
 	{
@@ -144,7 +152,7 @@ void AfficherMenuChargementProgramme( )
 	schar * emplacementFichier = AfficherDemandeEmplacement( CHARGEMENT_PROG );
 
 	// On tente d'ouvrir le fichier
-	FILE * fichierACharger = fopen( emplacementFichier, "rb" );
+	FILE * fichierACharger = fopen( ( char * ) emplacementFichier, "rb" );
 	if( fichierACharger == NULL )
 	{
 #ifndef DEBUG

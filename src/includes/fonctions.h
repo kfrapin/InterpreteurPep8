@@ -35,7 +35,7 @@
 
 //--------------------------------------------------- FONCTIONS
 // Fonction permettant d'ajouter une valeur à un registre
-void AdditionerRegistre( uint * registreConcerne, uint valeurAAjouter );
+void AdditionerRegistre( unint * registreConcerne, unint valeurAAjouter );
 
 // Fonction permettant de sauvegarder et mettre a jour les registres afin
 // d'effectuer un appel a une trap du systeme d'exploitation
@@ -50,19 +50,19 @@ void ChargerSystemeExploitation( FILE * fichierOS );
 
 // Fonction permettant de mettre les codes de condition NZVC
 // sous la forme d'un int
-uint ConcatenerNZVC( );
+unint ConcatenerNZVC( );
 
 // Fonction permettant de decaler un registre vers la droite
-void inline DecalerDroiteRegistre( uint * registre );
+void inline DecalerDroiteRegistre( unint * registre );
 
 // Fonction permettant de decaler un registre vers la gauche
-void inline DecalerGaucheRegistre( uint * registre );
+void inline DecalerGaucheRegistre( unint * registre );
 
 // Fonction permettant d'ecrire un mot (16 bits) en memoire
-void inline EcrireMotEnMemoire( uint valeur, uint adresse );
+void inline EcrireMotEnMemoire( unint valeur, unint adresse );
 
 // Fonction permettant d'ecrire un octet (8 bits) en memoire
-void inline EcrireOctetEnMemoire( uint valeur, uint adresse );
+void inline EcrireOctetEnMemoire( unint valeur, unint adresse );
 
 // Fonction permettant d'executer l'instruction ADDr 
 // en fonction des 4 bits de droite
@@ -162,30 +162,30 @@ schar ExecuterSUBr( uchar opcodeDroite );
 void JouerProgrammesEnParametres( uchar debut, uchar fin, char * * nomsFichier );
 
 // Fonction permettant de lire un mot (16 bits) en mémoire
-uint LireMotEnMemoire( uint adresse );
+unint LireMotEnMemoire( unint adresse );
 
 // Fonction permettant de lire un octet (8 bits) en mémoire
-uchar LireOctetEnMemoire( uint adresse );
+uchar LireOctetEnMemoire( unint adresse );
 
 // Fonction permettant de vider la memoire du systeme Pep8
-void NettoyerMemoire( );
+void NettoyerMemoire( uchar * memoireANettoyer, unint tailleMemoire );
 
 // Fonction permetter d'effectuer un NOT sur un registre
-void inline NierRegistre( uint * regitre );
+void inline NierRegistre( unint * regitre );
 
 // Fonction permetter d'effectuer une negation en complement
 // a deux sur un registre
-void inline NierRegistreEnComplement( uint * registre );
+void inline NierRegistreEnComplement( unint * registre );
 
 // Fonctions permettant de mettre à jour les codes de condition 
 // N, Z en indiquant la valeur du registre concerné
-void inline MettreAJourN( uint valeurRegistre );
-void inline MettreAJourZ( uint valeurRegistre );
+void inline MettreAJourN( unint valeurRegistre );
+void inline MettreAJourZ( unint valeurRegistre );
 
 // Fonctions permettant de mettre à jour les codes de condition 
 // V, C en passant la valeur à leur affecter en paramètre
-void inline MettreAJourC( uchar retenue );
-void inline MettreAJourV( uchar debordement );
+void inline MettreAJourC( unint retenue );
+void inline MettreAJourV( unint debordement );
 
 
 // Fonction permettant de mettre à jour la variable operandeIR,
@@ -194,7 +194,7 @@ void MettreAJourOperandeIR( );
 
 // Fonction permettant de recopier un fichier dans une zone mémoire
 // a partir de l'index indexDebut
-void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire, uint indexDebut );
+void RecopierFichierEnMemoire( FILE * fichier, uchar * memoire, unint indexDebut );
 
 // Fonction permettant mettre à jour le registre PC avec l'opérande
 // fournit à l'instruction
@@ -203,12 +203,12 @@ void inline RecopierOperandeDansPC( );
 // Fonction permettant de recopier le mot contenu dans un registre
 // en mémoire
 // ATTENTION : l'operande IR doit avoir été mise à jour auparavant
-void RecopierMotRegistreEnMemoire( uint * registre, uchar modeAdressage );
+void RecopierMotRegistreEnMemoire( unint * registre, uchar modeAdressage );
 
 // Fonction permettant de recopier la partie droite (8 bits)
 // d'un mot (contenu dans un registre) en mémoire
 // ATTENTION : l'operande IR doit avoir été mise à jour auparavant
-void RecopierOctetRegistreEnMemoire( uint * registre, uchar modeAdressage );
+void RecopierOctetRegistreEnMemoire( unint * registre, uchar modeAdressage );
 
 // Fonction permettant de récupérer un octet (8 bits) en mémoire, connaissant
 // le mode d'adressage pour y accéder.
@@ -220,7 +220,7 @@ uchar RecupererOctetEnMemoire( uchar modeAdressage );
 // le mode d'adressage pour y accéder.
 // ATTENTION : la variable operandeIR, doit auparavant
 // avoir été mise à jour.
-uint RecupererMotEnMemoire( uchar modeAdressage );
+unint RecupererMotEnMemoire( uchar modeAdressage );
 
 #endif	/* FONCTIONS_H */
 

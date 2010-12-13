@@ -36,25 +36,27 @@
 extern uchar entreeLecture;
 extern FILE * fichierEntree;
 extern FILE * fichierOS;
+extern char saisie [1024];
 
 //----------------------------------------- CODE DE CONDITIONS
-extern uchar codeN;
-extern uchar codeV;
-extern uchar codeZ;
-extern uchar codeC;
+extern unint codeN;
+extern unint codeV;
+extern unint codeZ;
+extern unint codeC;
 
 //---------------------------------------- MEMOIRE
 extern uchar * memoire;
 
 //---------------------------------------- REGISTRES
-extern uint registreA;
-extern uint registreX;
-extern uint registrePC;
-extern uint registreSP;
+extern unint registreA;
+extern unint registreX;
+extern unint registrePC;
+extern unint registreSP;
 extern uchar instructionIR;
-extern uint operandeIR;
+extern unint operandeIR;
 
-
+//---------------------------------------- PREDECODAGE
+predecodage * codePredecode;
 
 #endif	/* GLOBALES_H */
 
