@@ -56,8 +56,8 @@ int main(int argc, char * * argv) {
 
 	// On cree un tableau de la meme taille que la memoire principale
 	// pour effectuer du predecodage
-	codePredecode = malloc( TAILLE_MEMOIRE_MAX );
-	if( codePredecode == NULL )
+	codeDecode = malloc( TAILLE_MEMOIRE_MAX * sizeof( predecodage ) );
+	if( codeDecode == NULL )
 	{
 #ifdef DEBUG
     printf( "Impossible d'allouer la mémoire pour effectuer le prédécodage." RET );
@@ -65,7 +65,7 @@ int main(int argc, char * * argv) {
 		return EXIT_FAILURE;
 	}
 	// On nettoie la memoire
-	NettoyerMemoire( ( uchar * ) codePredecode, TAILLE_MEMOIRE_MAX );
+	NettoyerMemoire( ( uchar * ) codeDecode, TAILLE_MEMOIRE_MAX * sizeof( predecodage ) );
 
 	///////////////////////////////////////////////////////////////////// VERIFICATION COMMANDE UTILISATEUR
 	if( argc > 1 )

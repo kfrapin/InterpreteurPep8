@@ -1,7 +1,7 @@
 ;3 Boucles imbriquées
 ;--------------------
-; for( int j = 0; i<510; (j+1) * 2 )
-;    for( int k = 0; k<100; k++ )
+; for( int j = 0; i<100; j++ )
+;    for( int k = 0; k<1000; k++ )
 ;      for( int k = 0; k<1000; k++ )
 ;
 ; cout << "j = " << j << endl
@@ -21,17 +21,16 @@ main:    SUBSP   6,i         ;allocate #j #k #l
          STA     k,s         ; k = 0
          STA     l,s         ; k = 0
 for:     LDA     j,s
-         CPA     510,i         ;   j < 510 (j = 2, 6, 14, 30, 62, 126, 254, 510)
+         CPA     100,i         ;   j < 100
          BRGE    endFor      
-         LDA     j,s         ;   (j+1) * 2)
+         LDA     j,s         ;   j++)
          ADDA    1,i
-         ASLA
          STA     j,s  
          LDA     0,i         
          STA     k,s         ; k = 0     
          BR      for2         
 for2:    LDA     k,s
-         CPA     100,i         ;   k < 100
+         CPA     2000,i         ;   k < 2000
          BRGE    for      
          LDA     k,s         ;   k++)
          ADDA    1,i         

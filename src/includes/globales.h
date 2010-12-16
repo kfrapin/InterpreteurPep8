@@ -56,7 +56,7 @@ extern uchar instructionIR;
 extern unint operandeIR;
 
 //---------------------------------------- PREDECODAGE
-predecodage * codePredecode;
+predecodage * codeDecode;
 
 #endif	/* GLOBALES_H */
 

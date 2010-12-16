@@ -1,13 +1,10 @@
 ;3 Boucles imbriquées
 ;--------------------
-; for( int j = 0; i<510; (j+1) * 2 )
-;    for( int k = 0; k<100; k++ )
+; for( int j = 0; i<100; j++ )
+;    for( int k = 0; k<1000; k++ )
 ;      for( int k = 0; k<1000; k++ )
-;
-; cout << "j = " << j << endl
-; cout << "k = " << k << endl
-; cout << "l = " << l << endl
-;
+
+
 
 
          BR      main        
@@ -21,17 +18,16 @@ main:    SUBSP   6,i         ;allocate #j #k #l
          STA     k,s         ; k = 0
          STA     l,s         ; k = 0
 for:     LDA     j,s
-         CPA     510,i         ;   j < 510 (j = 2, 6, 14, 30, 62, 126, 254, 510)
+         CPA     100,i         ;   j < 100
          BRGE    endFor      
-         LDA     j,s         ;   (j+1) * 2)
+         LDA     j,s         ;   j++)
          ADDA    1,i
-         ASLA
          STA     j,s  
          LDA     0,i         
          STA     k,s         ; k = 0     
          BR      for2         
 for2:    LDA     k,s
-         CPA     100,i         ;   k < 100
+         CPA     2000,i         ;   k < 2000
          BRGE    for      
          LDA     k,s         ;   k++)
          ADDA    1,i         
@@ -46,20 +42,6 @@ for3:    LDA     l,s
          ADDA    1,i         
          STA     l,s  
          BR      for3    
-;endFor:  STRO    msgFin
-endFor:   STRO    msg,d       ;cout << "j = "
-         DECO    j,s         ;   << j
-         CHARO   '\n',i      ;   << endl
-         STRO    msg2,d       ;cout << "k = "
-         DECO    k,s         ;   << k
-         CHARO   '\n',i      ;   << endl
-         STRO    msg3,d       ;cout << "l = "
-         DECO    l,s         ;   << l
-         CHARO   '\n',i      ;   << endl
-         ADDSP   6,i         ;deallocate #j #k #l
+endFor:  ADDSP   6,i         ;deallocate #j #k #l
          STOP                
-msg:     .ASCII  "j = \x00"  
-msg2:     .ASCII  "k = \x00" 
-msg3:     .ASCII  "l = \x00" 
-msgFin:     .ASCII  "-- Fin Programme --\x00" 
          .END    

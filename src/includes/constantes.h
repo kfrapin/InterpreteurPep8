@@ -28,6 +28,8 @@
  *  3./ Constantes permettant de définir les opcodes de chaque groupe au vu des
  *      4 derniers bits.
  *   4./ Constantes permettant de définir les modes d'adressages
+ *   5./ Constantes permettant de definir les bornes inferieures de chaque instruction
+ *   6./ Constantes utilisees pour le predecodage
  * ----------------------------------------------------------------------------
  */
 
@@ -246,6 +248,75 @@
 #define INDEXE                  (5)
 #define INDEXE_PILE             (6)
 #define INDEXE_PILE_INDIRECT    (7)
+
+//----------------------------------------------------------------------------
+//  5./ Constantes permettant de definir les bornes
+//	inferieures de chaque instruction
+// 	i.e. En ne tenant pas compte des informations
+//	concernant les registres et/ou modes d'adressage
+//----------------------------------------------------------------------------
+
+// Instructions dont il n'y a rien a ignorer
+// Deja definis dans 3./
+
+// Instructions dont on ignore le mode d'adressage
+// Ou instructions dont on ignore le registre
+// (Bit le plus a droite)
+#define BR_I    4
+#define BRLE_I  6
+#define BRLT_I  8
+#define BREQ_I  10
+#define BRNE_I  12
+#define BRGE_I  14
+#define BRGT_I  16
+#define BRV_I   18
+#define BRC_I   20
+#define CALL_I  22
+#define NOTR_I  24
+#define NEGR_I  26
+#define ASLR_I  28
+#define ASRR_I  30
+#define ROLR_I  32
+#define RORR_I   34
+
+// Instruction dont on ignore le valeur n
+// (2 bits les plus a droite)
+#define NOPN_I   36
+
+// Instructions dont on ignore le mode d'adressage
+// Ou instructions dont on ignore la valeur de n
+// (3 bits les plus a droite)
+#define NOP_I  40
+#define DECI_I  48
+#define DECO_I   56
+#define STRO_I  64
+#define CHARI_I   72
+#define CHARO_I  80
+#define RETN_I   88
+#define ADDSP_I  96
+#define SUBSP_I   104
+
+// Instructions dont on ignore le mode d'adressage
+// Et dont on ignore le registre
+#define ADDR_I    	112
+#define SUBR_I 		128
+#define ANDR_I 		144
+#define ORR_I 		160
+#define CPR_I     		176
+#define LDR_I     		192
+#define LDBYTER_I 	208
+#define STR_I     		224
+#define STBYTER_I 	240
+
+//----------------------------------------------------------------------------
+//  6./ Constantes utilisees pour le predecodage
+//----------------------------------------------------------------------------
+
+// Constantes permettant de connaitre l'etat du decodage
+// pour une instruction donnee
+#define DECODAGE_A_FAIRE (0)
+#define DECODAGE_FAIT			 (1)
+#define DECODAGE_A_IGNORER	     (2)
 
 #endif	/* CONSTANTES_H */
 

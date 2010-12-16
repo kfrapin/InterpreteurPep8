@@ -26,6 +26,8 @@
 #include "includes/erreurs.h"
 #include "includes/fonctions.h"
 #include "includes/globales.h"
+#include "includes/instructions.h"
+#include "includes/predecodage.h"
 #ifdef DEBUG
     #include "includes/debug.h"
 #endif
@@ -209,53 +211,6 @@ unint ConcatenerNZVC( )
     return (  decalageN | decalageZ | decalageV | codeC );
 }
 
-// Fonction permettant de decaler un registre vers la droite
-void inline DecalerDroiteRegistre( unint * registre )
-{
-#ifdef DEBUG
-    printf( "+ DecalerDroiteRegistre." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-    // On passe en valeur signée sur 16 bits pour conserver
-    // le bit du signe apres le decalage
-    ssint valeurSignee = (ssint) ( * registre );
-
-    ( * registre ) = ( valeurSignee >> 1 );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- DecalerDroiteRegistre." RET);
-#endif
-}
-
-// Fonction permettant de decaler un registre vers la gauche
-void inline DecalerGaucheRegistre( unint * registre )
-{
-#ifdef DEBUG
-    printf( "+ DecalerGaucheRegistre." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    ( * registre ) = (ssint) ( ( * registre ) << 1 );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- DecalerGaucheRegistre." RET);
-#endif
-}
-
 // Fonction permettant d'ecrire un mot (16 bits) en memoire
 void inline EcrireMotEnMemoire( unint valeur, unint adresse )
 {
@@ -303,474 +258,7 @@ void inline EcrireOctetEnMemoire( unint valeur, unint adresse )
 #endif
 }
 
-// Fonction permettant d'executer l'instruction ADDr 
-// en fonction des 4 bits de droite
-schar ExecuterADDr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterADDr." RET);
-#endif
 
-    // On récupère l'opérande
-    MettreAJourOperandeIR();
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Addition sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // Addition sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    unint valeurRecuperee = RecupererMotEnMemoire( adressage );
-
-    // On effectue l'addition
-    AdditionerRegistre( registreConcerne, valeurRecuperee );
-
-
-#ifdef DEBUG
-    printf( "- ExecuterADDr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction ANDr
-// en fonction des 4 bits de droite
-schar ExecuterANDr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterANDr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Addition sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // Addition sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    unint valeurRecuperee = RecupererMotEnMemoire( adressage );
-
-    // Mise à jour du registre
-    unint nouvelleValeur = ( * registreConcerne ) & valeurRecuperee;
-    ( * registreConcerne ) = nouvelleValeur;
-
-    // Mise à jour des code de conditions N, Z
-    MettreAJourN( nouvelleValeur );
-    MettreAJourZ( nouvelleValeur );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterANDr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction CHARI
-// en fonction des 4 bits de droite
-schar ExecuterCHARI( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterCHARI." RET);
-#endif
-
-	// On met a jour l'operande qui va servir a savoir ou il faut stocker le caractere
-	MettreAJourOperandeIR( );
-
-	sint caractereSaisi = EOF;
-	if( entreeLecture == ENTREE_STDIN )
-	{
-		// On recupere un caractere au clavier et on le stocke en memoire
-		caractereSaisi = getchar( );
-	}
-	else if( entreeLecture == ENTREE_FICHIER )
-	{
-		// On recupere un caractere dans le fichier "fichierEntree"
-		caractereSaisi = getc( fichierEntree );
-	}
-
-	if( caractereSaisi == EOF )
-	// Erreur a la lecture
-	{
-#ifdef DEBUG
-    puts( "! ExecuterCHARI : Erreur durant la lecture du caractère" );
-#endif
-		return EXIT_FAILURE;
-	}
-
-	// On sait que le caractere lu est non signe
-	uchar modeAdressage = opcodeDroite & 7;
-
-	RecopierOctetRegistreEnMemoire( ( unint * ) &caractereSaisi, modeAdressage );
-
-#ifdef DEBUG
-    printf( "- ExecuterCHARI." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-schar ExecuterCHARO( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterCHARO." RET);
-#endif
-
-    // Mise a jour de l'operande IR
-    MettreAJourOperandeIR( );
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    uchar valeurRecuperee = RecupererOctetEnMemoire( adressage );
-
-    // Affichage de cette valeur sur la sortie standard
-    putchar( valeurRecuperee );
-
-#ifdef DEBUG
-    printf( "- ExecuterCHARO." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction LDBYTEr
-// en fonction des 4 bits de droite
-schar ExecuterLDBYTEr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterLDBYTEr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Chargement dans le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // Chargement dans le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    ( * registreConcerne ) = 
-            ( ( (*registreConcerne) & MASQUE_8_BITS_G )
-                | RecupererOctetEnMemoire( adressage )
-            );
-
-    // Mise à jour des codes de condition N,Z
-    MettreAJourN( (* registreConcerne) );
-    MettreAJourZ( (* registreConcerne) );
-
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterLDBYTEr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction LDr
-// en fonction des 4 bits de droite
-schar ExecuterLDr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterLDr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Chargement dans le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // Chargement dans le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    ( * registreConcerne ) = RecupererMotEnMemoire( adressage );
-
-    // Mise à jour des codes de condition N,Z
-    MettreAJourN( (* registreConcerne) );
-    MettreAJourZ( (* registreConcerne) );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterLDr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction CPr
-// en fonction des 4 bits de droite
-schar ExecuterCPr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterCPr." RET);
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    // Registre concerne par la comparaison
-    unint valeurRegistre;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Comparaison sur le registre A
-    {
-        valeurRegistre = registreA;
-    }
-    else
-    // Comparaison sur le registre X
-    {
-        valeurRegistre = registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    unint valeurRecuperee = RecupererMotEnMemoire( adressage );
-
-    // On utilise la fonction "AdditionerRegistre", sauf qu'au lieu
-    // de tester un registre, elle va tester notre sa valeur dans une
-    // variable sans importance -» Non modification du registre
-    AdditionerRegistre( &valeurRegistre, ((~valeurRecuperee + 1) & MASQUE_16_BITS) );
-            
-#ifdef DEBUG
-    printf( "- ExecuterCPr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction ORr
-// en fonction des 4 bits de droite
-schar ExecuterORr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterORr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // Mise à jour de l'opérande
-    MettreAJourOperandeIR( );
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Addition sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // Addition sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    unint valeurRecuperee = RecupererMotEnMemoire( adressage );
-
-    // Mise à jour du registre
-    unint nouvelleValeur = ( * registreConcerne ) | valeurRecuperee;
-    ( * registreConcerne ) = nouvelleValeur;
-
-    // Mise à jour des code de conditions N, Z
-    MettreAJourN( nouvelleValeur );
-    MettreAJourZ( nouvelleValeur );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterORr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction RETTR
-schar ExecuterRETTR(  )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterRETTR." RET);
-    printf( TAB SEP_AVT_MAJ "registreA,  registreX, registrePC, registreSP" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    AfficherValeurRegistrePC( );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // Remise en place du contexte present avant l'appel au trap handler
-    // Codes de condition
-    uchar codesNZVC = LireOctetEnMemoire( registreSP );
-    codeN = ( ( codesNZVC & 8 ) != 0 ) ? 1 : 0;
-    codeZ = ( ( codesNZVC & 4 ) != 0 ) ? 1 : 0;
-    codeV = ( ( codesNZVC & 2 ) != 0 ) ? 1 : 0;
-    codeC = ( codesNZVC & 1 );
-
-    // Registres
-    registreA = LireMotEnMemoire( registreSP + 1 );
-    registreX = LireMotEnMemoire( registreSP + 3 );
-    registrePC = LireMotEnMemoire( registreSP + 5 );
-    registreSP = LireMotEnMemoire( registreSP + 7 );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA,  registreX, registrePC, registreSP" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    AfficherValeurRegistrePC( );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterRETTR." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction ROLr
-// en fonction des 4 bits de droite
-schar ExecuterROLr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterROLr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 1) == 0 )
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    {
-        registreConcerne = &registreX;
-    }
-
-    // On met de cote la future valeur du code de condition
-    unint nouvelleValeurC = ( ( * registreConcerne ) >> 15 ) & 1;
-
-    // On met a jour le registre
-    ( * registreConcerne ) = ( ( * registreConcerne ) << 1 ) | codeC;
-
-    // On met a jour le code de condiction C
-    MettreAJourC( nouvelleValeurC );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterROLr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction RORr
-// en fonction des 4 bits de droite
-schar ExecuterRORr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterRORr." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 1) == 0 )
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    {
-        registreConcerne = &registreX;
-    }
-
-    // On met de cote la future valeur du code de condition
-    unint nouvelleValeurC = ( * registreConcerne ) & 1;
-
-    // On met a jour le registre
-    ( * registreConcerne ) = ( ( * registreConcerne ) >> 1 ) | ( codeC << 15 );
-
-    // On met a jour le code de condiction C
-    MettreAJourC( nouvelleValeurC );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterRORr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
 
 // Fonction permettant d'executer l'instruction du groupe
 //  GRINST1 au vu de la valeur des 4 derniers bits fournis
@@ -799,14 +287,12 @@ schar ExecuterInstGr1(uchar opcodeDroite)
 
     else if( opcodeDroite == MOVSPA_FIN )
     {
-        // Copie du pointeur de pile dans le registre A
-        registreA = registreSP;
+    	ExecuterMOVSPA( );
         return EXIT_SUCCESS;
     }
     else if( opcodeDroite == MOVFLGA_FIN )
     {
-        // Copie de NZVC dans le registre A (dans les 4 bits de droite)
-        registreA = ConcatenerNZVC( );
+    	ExecuterMOVFLGA( );
         return EXIT_SUCCESS;
     }
 
@@ -814,63 +300,43 @@ schar ExecuterInstGr1(uchar opcodeDroite)
     // Donc certains tests ont pu être supprimés, et on sait qu'on a besoin de
     // récupérer l'opérande passée à l'instruction
     MettreAJourOperandeIR( );
-    uchar modeAdresssage = ( opcodeDroite & 1 );
+    uchar modeAdressage = ( opcodeDroite & 1 );
 
     // Il faut convertir le mode d'adressage INDEXE pour qu'il puisse etre reconnu
     // dans la fonction RecupererMotEnMemoire
-    if( modeAdresssage == 1 )
+    if( modeAdressage == 1 )
     {
-    	modeAdresssage = INDEXE;
+    	modeAdressage = INDEXE;
     }
 
     if( opcodeDroite <= BR_FIN_S )
     {
-    	registrePC = RecupererMotEnMemoire( modeAdresssage );
+    	ExecuterBR( modeAdressage );
     }
 
     else if( opcodeDroite <= BRLE_FIN_S )
     {
-        if( (codeZ == 1) || (codeN == 1) )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdresssage );
-        }
-
+    	ExecuterBRLE( modeAdressage );
     }
 
     else if( opcodeDroite <= BRLT_FIN_S )
     {
-        if( codeN == 1 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdresssage );
-        }
+    	ExecuterBRLT( modeAdressage );
     }
 
     else if( opcodeDroite <= BREQ_FIN_S )
     {
-
-        if( codeZ == 1 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdresssage );
-        }
+    	ExecuterBREQ( modeAdressage );
     }
 
     else if( opcodeDroite <= BRNE_FIN_S )
     {
-        if( codeZ == 0 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdresssage );
-        }
-        
+    	ExecuterBRNE( modeAdressage );
     }
-
     else
     {
         // Si on arrive ici, instruction = BRGE
-        if( codeN == 0 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdresssage );
-        }
-
+    	ExecuterBRGE( modeAdressage );
     }
     
 #ifdef DEBUG
@@ -900,45 +366,28 @@ schar ExecuterInstGr2( uchar opcodeDroite )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-
-        if( (codeN == 0) && (codeZ == 0) )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdressage );
-        }
+        ExecuterBRGT( modeAdressage );
         return EXIT_SUCCESS;
     }
     else if( opcodeDroite <= BRV_FIN_S )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-
-        if( codeV == 1 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdressage );
-        }
+        ExecuterBRV( modeAdressage );
         return EXIT_SUCCESS;
     }
     else if( opcodeDroite <= BRC_FIN_S )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-
-        if( codeC == 1 )
-        {
-        	registrePC = RecupererMotEnMemoire( modeAdressage );
-        }
+        ExecuterBRC( modeAdressage );
         return EXIT_SUCCESS;
     }
     else if( opcodeDroite <= CALL_FIN_S )
     {
         // Mise a jour de l'operande
         MettreAJourOperandeIR( );
-
-        // On sauvegarde le registrePC sur la pile
-        registreSP -= 2;
-        EcrireMotEnMemoire( registrePC, registreSP );
-
-        registrePC = RecupererMotEnMemoire( modeAdressage );
+        ExecuterCALL( modeAdressage );
         return EXIT_SUCCESS;
     }
 
@@ -960,52 +409,20 @@ schar ExecuterInstGr2( uchar opcodeDroite )
 
     if( opcodeDroite <= NOTR_FIN_S )
     {
-        // On effectue la negation du registre
-        NierRegistre( registreConcerne );
+        ExecuterNOTr( registreConcerne );
     }
     else if( opcodeDroite <= NEGR_FIN_S )
     {
-        if( ((ssint) (*registreConcerne)) == -32768 )
-        // Si la valeur a inverser est -32768 : overflow
-        {
-            MettreAJourV( 1 );
-        }
-        else
-        {
-            MettreAJourV( 0 );
-        }
-
-        // On effectue la negation en complement a deux
-        NierRegistreEnComplement( registreConcerne );
+    	ExecuterNEGr( registreConcerne );
     }
     else if( opcodeDroite <= ASLR_FIN_S )
     {
-        // On recupere le bit de signe qui va "partir" dans
-        // le code de condition C
-        unint ancienSigne = ( (*registreConcerne) >> 15 ) & 1;
-
-        // On decale le regitre vers la gauche
-        DecalerGaucheRegistre( registreConcerne );
-
-        // Mise a jour des codes de condition V, C
-        MettreAJourC( ancienSigne );
-        
-        uchar nouveauSigne = ( (*registreConcerne) >> 15 ) & 1;
-        MettreAJourV( ((ancienSigne == nouveauSigne) ? 0 : 1) );
+    	ExecuterASLr( registreConcerne );
     }
     else if( opcodeDroite <= ASRR_FIN_S )
     {
-        // Mise a jour du code de condition C avec le bit
-        // qui "sort"
-        MettreAJourC( ( ( * registreConcerne ) & 1 ) );
-
-        // On decale le regitre vers la droite
-        DecalerDroiteRegistre( registreConcerne );
+    	ExecuterASRr( registreConcerne );
     }
-
-    // Mise à jour des codes de condition N,Z
-    MettreAJourN( (* registreConcerne) );
-    MettreAJourZ( (* registreConcerne) );
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr2." RET);
@@ -1021,17 +438,33 @@ schar ExecuterInstGr3( uchar opcodeDroite )
     printf( "+ ExecuterInstGr3." RET);
 #endif
 
+    // Registre concerné par l'opération
+    // (Pas utile pour toutes les opérations)
+    unint * registreConcerne;
+
+    if( (opcodeDroite & 1) == 0 )
+    {
+        registreConcerne = &registreA;
+    }
+    else
+    {
+        registreConcerne = &registreX;
+    }
+
+    // Instruction en cours
     if( opcodeDroite <= ROLR_FIN_S )
     {
-    	ExecuterROLr( opcodeDroite );
+    	ExecuterROLr( registreConcerne );
     }
     else if( opcodeDroite <= RORR_FIN_S )
     {
-    	ExecuterRORr( opcodeDroite );
+    	ExecuterRORr( registreConcerne );
     }
-
-    // Sinon on est sur une opération NOP
-    AppelerTrapHandler( );
+    else
+    {
+        // Sinon on est sur une opération NOP
+        AppelerTrapHandler( );
+    }
 
 #ifdef DEBUG
     printf( "- ExecuterInstGr3." RET);
@@ -1074,8 +507,9 @@ schar ExecuterInstGr5( uchar opcodeDroite)
 	}
 	else
 	{
-		// On est sur l'operation CHARI
-		ExecuterCHARI( opcodeDroite );
+		MettreAJourOperandeIR( );
+		uchar modeAdressage = opcodeDroite & 7;
+		ExecuterCHARI( modeAdressage );
 	}
 
 #ifdef DEBUG
@@ -1094,12 +528,16 @@ schar ExecuterInstGr6( uchar opcodeDroite )
 
     if( opcodeDroite <= CHARO_FIN_S )
     {
-    	ExecuterCHARO( opcodeDroite );
+		MettreAJourOperandeIR( );
+		uchar modeAdressage = opcodeDroite & 7;
+    	ExecuterCHARO( modeAdressage );
     }
     else
     // Opération RETn
     {
-        ExecuterRETn( opcodeDroite );
+        // On récupère la taille à désempiler
+        unint valeurN = ( opcodeDroite & 7 );
+        ExecuterRETn( valeurN );
     }
 
 #ifdef DEBUG
@@ -1119,15 +557,16 @@ schar ExecuterInstGr7( uchar opcodeDroite )
     // On recupere l'operande de l'instruction
     MettreAJourOperandeIR( );
 
+    // Récupération du mode d'adressage et de la donnée
+    uchar modeAdressage = opcodeDroite & 7;
+
     if( opcodeDroite <= ADDSP_FIN_S )
     {
-        // On effectue l'addition
-        AdditionerRegistre( &registreSP, operandeIR );
+    	ExecuterADDSP( modeAdressage );
     }
     else
     {
-        // On effectue la soustraction
-        AdditionerRegistre( &registreSP, ((~operandeIR + 1) & MASQUE_16_BITS) );
+        ExecuterSUBSP( modeAdressage );
     }
 
 #ifdef DEBUG
@@ -1136,13 +575,14 @@ schar ExecuterInstGr7( uchar opcodeDroite )
     return EXIT_SUCCESS;
 }
 
+// Fonction permettant de lancer l'execution des instructions
 void ExecuterInstructions( )
 {
 #ifdef DEBUG
     printf( "+ ExecuterInstructions." RET);
 #endif
 
-	// Variable permettant de savoir si l'exécution s'est bien passée
+	// Variable permettant de savoir si l'exécution s'est bien passee
 	schar retourExec = 0;
 	instructionIR = memoire[registrePC++];
 
@@ -1150,80 +590,70 @@ void ExecuterInstructions( )
     {
 #ifdef DEBUG
 printf( RET "> Instruction lue : %d." RET, instructionIR );
-printf( SEP_FIN RET );
 #endif
-        // On récupère les 4 bits de gauche de l'instruction
-        uchar opcodeGauche =  ( instructionIR >> 4 );
 
-        // On récupère les 4 bits de droite de l'instruction
-        uchar opcodeDroite = 15 & instructionIR;
+		// Instruction deja predecodee ?
+		predecodage decodage = codeDecode[registrePC-1];
+		//if( entreeLecture == ENTREE_STDIN )
+		//	printf( "decodage.etatDecodage : %d" RET, decodage.etatDecodage );
 
-        switch( opcodeGauche )
-        {
-        	case GRINST1:
-        		retourExec = ExecuterInstGr1( opcodeDroite );
-        		break;
 
-        	case GRINST2:
-        		retourExec = ExecuterInstGr2( opcodeDroite );
-        		break;
+		switch( decodage.etatDecodage )
+		{
+			case DECODAGE_A_FAIRE:
+#ifdef DEBUG
+	printf( SEP_FIN RET );
+	puts( "  DECODAGE_A_FAIRE" ) ;
+	puts( "  -> DECODAGE_FAIT" );
+	printf( SEP_FIN RET );
+#endif
+				PredecoderInstruction( registrePC  - 1 );
+				retourExec = JouerInstructionPredecodee( registrePC - 1 );
+				break;
 
-        	case GRINST3:
-        		retourExec = ExecuterInstGr3( opcodeDroite );
-        		break;
+			case DECODAGE_FAIT:
+				// On teste s'il s'agit toujours de la meme instruction
+				if( decodage.opCodeOriginal == instructionIR )
+				// Code inchange
+				{
+#ifdef DEBUG
+	printf( SEP_FIN RET );
+	puts( "  DECODAGE_FAIT" );
+	puts( "  -> DECODAGE_FAIT" );
+	printf( SEP_FIN RET );
+#endif
+					retourExec = JouerInstructionPredecodee( registrePC - 1 );
+				}
+				else
+				// Code modifie
+				{
+#ifdef DEBUG
+	printf( SEP_FIN RET );
+	puts( "  DECODAGE_FAIT" );
+	puts( "  -> DECODAGE_A_IGNORER" );
+	printf( SEP_FIN RET );
+#endif
+					// On indique qu'on ne decodera plus jamais cette instruction
+					decodage.etatDecodage = DECODAGE_A_IGNORER;
+					// On execute l'instruction sans utiliser le predecodage
+					retourExec = JouerInstructions( );
+				}
+				break;
 
-        	case GRINST4:
-        		retourExec = ExecuterInstGr4( opcodeDroite );
-        		break;
+			case DECODAGE_A_IGNORER:
+#ifdef DEBUG
+	printf( SEP_FIN RET );
+	puts( "  DECODAGE_A_IGNORER" );
+	puts( "  -> DECODAGE_A_IGNORER" );
+	printf( SEP_FIN RET );
+#endif
+				retourExec = JouerInstructions( );
+				break;
+		}
 
-        	case GRINST5:
-        		retourExec = ExecuterInstGr5( opcodeDroite );
-        		break;
 
-        	case GRINST6:
-        		retourExec = ExecuterInstGr6( opcodeDroite );
-        		break;
 
-        	case GRINST7:
-        		 retourExec = ExecuterInstGr7( opcodeDroite );
-        		 break;
-
-        	case ADDR_DEB:
-        		retourExec = ExecuterADDr( opcodeDroite );
-        		break;
-
-        	case SUBR_DEB:
-        		retourExec = ExecuterSUBr( opcodeDroite );
-        		break;
-
-        	case ANDR_DEB:
-        		retourExec = ExecuterANDr( opcodeDroite );
-        		break;
-
-        	case ORR_DEB:
-        		retourExec = ExecuterORr( opcodeDroite );
-        		break;
-
-        	case CPR_DEB:
-        		retourExec = ExecuterCPr( opcodeDroite );
-        		break;
-
-        	case LDR_DEB:
-        		retourExec = ExecuterLDr( opcodeDroite );
-        		break;
-
-        	case LDBYTER_DEB:
-        		retourExec = ExecuterLDBYTEr( opcodeDroite );
-        		break;
-
-        	case STR_DEB:
-        		retourExec = ExecuterSTr( opcodeDroite );
-        		break;
-
-        	case STBYTER_DEB:
-        		retourExec = ExecuterSTBYTEr( opcodeDroite );
-        		break;
-        }
+		// retourExec = JouerInstructions( );
 
         instructionIR = memoire[registrePC++];
     }
@@ -1233,108 +663,124 @@ printf( SEP_FIN RET );
 #endif
 }
 
-// Fonction permettant d'executer l'instruction RETr
-// en fonction des 4 bits de droite
-schar ExecuterRETn( uchar opcodeDroite )
+// Fonction permettant de jouer les instructions
+// sans utiliser le predecodage
+schar JouerInstructions( )
 {
 #ifdef DEBUG
-    printf( "+ ExecuterRETn." RET);
-    printf( TAB SEP_AVT_MAJ "registrePC, registreSP" RET );
-    AfficherValeurRegistrePC( );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
+    printf( "+ JouerInstructions." RET);
 #endif
 
-    // On récupère la taille à désempiler
-    uchar taille = ( opcodeDroite & 7 );
+	// Variable permettant de savoir si l'exécution s'est bien passee
+	schar retourExec = 0;
 
-    // On désempile
-    registreSP += taille;
+    // On récupère les 4 bits de gauche de l'instruction
+	uchar opcodeGauche =  ( instructionIR >> 4 );
 
-    // On met à jour le registre PC, et on désempile
-    registrePC = LireMotEnMemoire( registreSP );
-    registreSP += 2;
+	// On récupère les 4 bits de droite de l'instruction
+	uchar opcodeDroite = 15 & instructionIR;
+	unint * registreConcerne;
+	uchar modeAdressage;
+
+	switch( opcodeGauche )
+	{
+		case GRINST1:
+			retourExec = ExecuterInstGr1( opcodeDroite );
+			break;
+
+		case GRINST2:
+			retourExec = ExecuterInstGr2( opcodeDroite );
+			break;
+
+		case GRINST3:
+			retourExec = ExecuterInstGr3( opcodeDroite );
+			break;
+
+		case GRINST4:
+			retourExec = ExecuterInstGr4( opcodeDroite );
+			break;
+
+		case GRINST5:
+			retourExec = ExecuterInstGr5( opcodeDroite );
+			break;
+
+		case GRINST6:
+			retourExec = ExecuterInstGr6( opcodeDroite );
+			break;
+
+		case GRINST7:
+			 retourExec = ExecuterInstGr7( opcodeDroite );
+			 break;
+
+		case ADDR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterADDr( registreConcerne, modeAdressage );
+			break;
+
+		case SUBR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterSUBr( registreConcerne, modeAdressage );
+			break;
+
+		case ANDR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterANDr( registreConcerne, modeAdressage );
+			break;
+
+		case ORR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterORr( registreConcerne, modeAdressage );
+			break;
+
+		case CPR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterCPr( registreConcerne, modeAdressage );
+			break;
+
+		case LDR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterLDr( registreConcerne, modeAdressage );
+			break;
+
+		case LDBYTER_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterLDBYTEr( registreConcerne, modeAdressage );
+			break;
+
+		case STR_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterSTr( registreConcerne, modeAdressage );
+			break;
+
+		case STBYTER_DEB:
+			MettreAJourOperandeIR( );
+			registreConcerne = ( ( instructionIR & 8 ) == 0 ) ? &registreA : &registreX;
+			modeAdressage = opcodeDroite & 7;
+			retourExec = ExecuterSTBYTEr( registreConcerne, modeAdressage );
+			break;
+	}
 
 #ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registrePC, registreSP" RET );
-    AfficherValeurRegistrePC( );
-    AfficherValeurRegistreSP( );
-    printf( TAB SEP_FIN RET );
-    printf( "- ExecuterRETn." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction STr
-// en fonction des 4 bits de droite
-schar ExecuterSTr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterSTr." RET);
+    printf( "- JouerInstructions." RET);
 #endif
 
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    unint *  registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Soustraction sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // soustraction sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-
-    // On recopie le contenu du registre en mémoire
-    RecopierMotRegistreEnMemoire( registreConcerne, adressage );
-
-#ifdef DEBUG
-    printf( "- ExecuterSTr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
-
-// Fonction permettant d'executer l'instruction STBYTEr
-// en fonction des 4 bits de droite
-schar ExecuterSTBYTEr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterSTBYTEr." RET);
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR( );
-
-    unint *  registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Soustraction sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // soustraction sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-
-    // On recopie les 8 bits de droites du registre en mémoire
-    RecopierOctetRegistreEnMemoire( registreConcerne, adressage );
-
-#ifdef DEBUG
-    printf( "- ExecuterSTBYTEr." RET);
-#endif
-    return EXIT_SUCCESS;
+    return retourExec;
 }
 
 // Fonction permettant de jouer les programmes passes
@@ -1389,43 +835,6 @@ void JouerProgrammesEnParametres( uchar debut, uchar fin, char * * nomsFichier )
 #endif
 }
 
-// Fonction permettant d'executer l'instruction r
-// en fonction des 4 bits de droite
-schar ExecuterSUBr( uchar opcodeDroite )
-{
-#ifdef DEBUG
-    printf( "+ ExecuterSUBr." RET);
-#endif
-
-    // On récupère l'opérande
-    MettreAJourOperandeIR();
-
-    // Registre concerné par l'opération
-    unint * registreConcerne;
-
-    if( (opcodeDroite & 8) == 0 )
-    // Soustraction sur le registre A
-    {
-        registreConcerne = &registreA;
-    }
-    else
-    // soustraction sur le registre X
-    {
-        registreConcerne = &registreX;
-    }
-
-    // Récupération du mode d'adressage et de la donnée
-    uchar adressage = opcodeDroite & 7;
-    unint valeurRecuperee = RecupererMotEnMemoire( adressage );
-
-    // On effectue la soustraction
-    AdditionerRegistre( registreConcerne, ( (~valeurRecuperee + 1) & MASQUE_16_BITS) );
-
-#ifdef DEBUG
-    printf( "- ExecuterSUBr." RET);
-#endif
-    return EXIT_SUCCESS;
-}
 
 // Fonction permettant de lire un mot (16 bits) en mémoire
 unint LireMotEnMemoire( unint adresse )
@@ -1476,29 +885,6 @@ void NettoyerMemoire( uchar * memoireANettoyer, unint tailleMemoire )
 
 #ifdef DEBUG
     printf( "- NettoyerMemoire." RET);
-#endif
-}
-
-// Fonction permetter d'effectuer un NOT sur un registre
-void inline NierRegistre( unint * registre )
-{
-#ifdef DEBUG
-    printf( "+ NierRegistre." RET);
-    printf( TAB SEP_AVT_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-#endif
-
-    // On effectue la négation du registre
-    ( * registre ) = (ssint) ~( * registre );
-
-#ifdef DEBUG
-    printf( TAB SEP_APR_MAJ "registreA | registreX" RET );
-    AfficherValeurRegistreA( );
-    AfficherValeurRegistreX( );
-    printf( TAB SEP_FIN RET );
-    printf( "- NierRegistre." RET);
 #endif
 }
 

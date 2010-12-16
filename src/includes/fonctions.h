@@ -52,70 +52,17 @@ void ChargerSystemeExploitation( FILE * fichierOS );
 // sous la forme d'un int
 unint ConcatenerNZVC( );
 
-// Fonction permettant de decaler un registre vers la droite
-void inline DecalerDroiteRegistre( unint * registre );
-
-// Fonction permettant de decaler un registre vers la gauche
-void inline DecalerGaucheRegistre( unint * registre );
-
 // Fonction permettant d'ecrire un mot (16 bits) en memoire
 void inline EcrireMotEnMemoire( unint valeur, unint adresse );
 
 // Fonction permettant d'ecrire un octet (8 bits) en memoire
 void inline EcrireOctetEnMemoire( unint valeur, unint adresse );
 
-// Fonction permettant d'executer l'instruction ADDr 
-// en fonction des 4 bits de droite
-schar ExecuterADDr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction ANDr
-// en fonction des 4 bits de droite
-schar ExecuterANDr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction CHARI
-// en fonction des 4 bits de droite
-schar ExecuterCHARI( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction CHARO
-// en fonction des 4 bits de droite
-schar ExecuterCHARO( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction CPr
-// en fonction des 4 bits de droite
-schar ExecuterCPr( uchar opcodeDroite );
-
 // Fonction permettant de lancer l'execution d'un programme
 // ou d'une interruption systeme
 // ATTENTION : les registres SP et PC devront avoir ete mis a
 // jour auparavant si necessaire
 void ExecuterInstructions(  );
-
-// Fonction permettant d'executer l'instruction LDBYTEr
-// en fonction des 4 bits de droite
-schar ExecuterLDBYTEr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction LDr
-// en fonction des 4 bits de droite
-schar ExecuterLDr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction ORr
-// en fonction des 4 bits de droite
-schar ExecuterORr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction RETTR
-schar ExecuterRETTR(  );
-
-// Fonction permettant d'executer l'instruction ROLr
-// en fonction des 4 bits de droite
-schar ExecuterROLr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction RORr
-// en fonction des 4 bits de droite
-schar ExecuterRORr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction STBYTEr
-// en fonction des 4 bits de droite
-schar ExecuterSTBYTEr( uchar opcodeDroite );
 
 // Fonction permettant d'executer l'instruction du groupe 
 // GRINST1 au vu de la valeur des 4 derniers bits fournis.
@@ -145,17 +92,12 @@ schar ExecuterInstGr6( uchar opcodeDroite );
 // GRINST7 au vu de la valeur des 4 derniers bits fournis.
 schar ExecuterInstGr7( uchar opcodeDroite );
 
-// Fonction permettant d'executer l'instruction RETr
-// en fonction des 4 bits de droite
-schar ExecuterRETn( uchar opcodeDroite );
+// Fonction permettant de lancer l'execution des instructions
+void ExecuterInstructions( );
 
-// Fonction permettant d'executer l'instruction STr
-// en fonction des 4 bits de droite
-schar ExecuterSTr( uchar opcodeDroite );
-
-// Fonction permettant d'executer l'instruction SUBr
-// en fonction des 4 bits de droite
-schar ExecuterSUBr( uchar opcodeDroite );
+// Fonction permettant de jouer les instructions
+// sans utiliser le predecodage
+schar JouerInstructions( );
 
 // Fonction permettant de jouer les programmes passes
 // en parametre lors de l'appel de l'interpreteur
@@ -169,9 +111,6 @@ uchar LireOctetEnMemoire( unint adresse );
 
 // Fonction permettant de vider la memoire du systeme Pep8
 void NettoyerMemoire( uchar * memoireANettoyer, unint tailleMemoire );
-
-// Fonction permetter d'effectuer un NOT sur un registre
-void inline NierRegistre( unint * regitre );
 
 // Fonction permetter d'effectuer une negation en complement
 // a deux sur un registre

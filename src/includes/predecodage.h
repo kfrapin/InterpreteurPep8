@@ -32,9 +32,13 @@
 #include "typedefs.h"
 
 //--------------------------------------------------- FONCTIONS
-// Fonction permettant de tester si le code soumis
-// a deja ete predecode, et le predecoder sinon
-// Retourner le resultat de l'operation
-unint PredecoderEtRetourner( unint adresseMemoire );
+
+// Fonction permettant d'executer une instruction predecodee
+unint JouerInstructionPredecodee( unint adresseMemoire );
+
+// Fonction permettant de predeocder une instruction
+// et de stocker le code predecode dans la memoire
+// codePredecode
+unint PredecoderInstruction( unint adresseMemoire );
 
 #endif /* PREDECODAGE_H_ */

@@ -72,5 +72,5 @@ uchar instructionIR = 0;
 unint operandeIR = 0;
 
 //---------------------------------------- PREDECODAGE
-predecodage * codePredecode;
+predecodage * codeDecode;
 

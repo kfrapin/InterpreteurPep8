@@ -52,14 +52,23 @@ typedef signed char schar;
 // Structure utilise pour le predecodage
 typedef struct Predecodage
 {
+	// Flag permettant de savoir si on decode ou non cette instruction
+	//  Si etatPredecodage = DECODAGE_A_FAIRE, on decode l'instruction
+	//  Sinon si etatPredecodage = DECODAGE_FAIT, on ne decode pas l'instruction, et on se sert du resultat
+	//	Sinon si etatPredecodage = DECODAGE_A_IGNORER, on ne decode pas l'instruction
+	unint etatDecodage;
+
 	// Code original predecode
 	unint opCodeOriginal;
 
+	// Instruction predecodee
+	unint instructionDecodee;
+
 	// Registre predecode
-	unint registreUtilise;
+	unint * registreDecode;
 
 	// Mode d'adressage predecode
-	unint modeAdressage;
+	unint adressageDecode;
 
 } predecodage;
 
