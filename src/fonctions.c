@@ -597,7 +597,7 @@ printf( RET "> Instruction lue : %d." RET, instructionIR );
 		//if( entreeLecture == ENTREE_STDIN )
 		//	printf( "decodage.etatDecodage : %d" RET, decodage.etatDecodage );
 
-
+/*
 		switch( decodage.etatDecodage )
 		{
 			case DECODAGE_A_FAIRE:
@@ -650,8 +650,31 @@ printf( RET "> Instruction lue : %d." RET, instructionIR );
 				retourExec = JouerInstructions( );
 				break;
 		}
+*/
 
-
+		if( decodage.etatDecodage == DECODAGE_FAIT )
+		{
+			if( decodage.opCodeOriginal == instructionIR )
+			// Code inchange
+			{
+				JouerInstructionPredecodee( registrePC - 1 );
+			}
+			else
+			// Code modifie
+			{
+				decodage.etatDecodage = DECODAGE_A_IGNORER;
+				JouerInstructions( );
+			}
+		}
+		else if( decodage.etatDecodage == DECODAGE_A_FAIRE )
+		{
+			PredecoderInstruction( registrePC  - 1 );
+			retourExec = JouerInstructionPredecodee( registrePC - 1 );
+		}
+		else if( decodage.etatDecodage == DECODAGE_A_IGNORER )
+		{
+			 JouerInstructions( );
+		}
 
 		// retourExec = JouerInstructions( );
 
